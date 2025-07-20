@@ -78,7 +78,7 @@ const Splash = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'green',
+    backgroundColor: '#189439',
     justifyContent: 'center',
     alignItems: 'center',
   },
