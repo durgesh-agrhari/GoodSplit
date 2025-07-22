@@ -21,6 +21,8 @@ import { signOut } from 'firebase/auth';
 import { auth, expensesRef, tripsRef } from '../../config/firebse';
 import { useSelector } from 'react-redux';
 import { deleteDoc, doc, getDocs, query, where } from 'firebase/firestore';
+import { useAuth } from '../../context/AuthContext';
+import BannerAds from '../adManager/BannerAds';
 
 const { width } = Dimensions.get('window');
 const ITEM_WIDTH = width * 0.85;
@@ -40,6 +42,7 @@ const data = [
 ];
 
 const HomeScreen = () => {
+  const { userData} = useAuth();
   const navigation = useNavigation()
   const scrollX = useRef(new Animated.Value(0)).current;
   const flatListRef = useRef(null);
@@ -77,7 +80,7 @@ const HomeScreen = () => {
   // }
 
   const fetchTrip = async () => {
-    const q = query(tripsRef, where("userId", "==", user.uid));
+    const q = query(tripsRef, where("userId", "==", userData.uid));
     const querySnapshot = await getDocs(q);
     let grandTotal = 0;
     let totals = {}; // ✅ Initialize totals as an empty object
@@ -171,7 +174,7 @@ const HomeScreen = () => {
           <Text style={styles.title}>GoodSplit</Text>
         </View>
         <TouchableOpacity style={{ backgroundColor: '#edf2f0', borderRadius: 20, padding: 8, paddingRight: 15, paddingLeft: 15 }}>
-          <Text>Hi, {user.displayName}</Text>
+          <Text>Hi, {userData.name}</Text>
         </TouchableOpacity>
         {/* <TouchableOpacity onPress={handleLogout} style={{backgroundColor:'#edf2f0', borderRadius:20, padding:8, paddingRight:15, paddingLeft:15}}>
           <Text>Logout</Text>
@@ -180,7 +183,7 @@ const HomeScreen = () => {
           <Ionicons name="notifications-sharp" color="#2a2e2c" size={25} />
         </TouchableOpacity> */}
       </View>
-      <View>
+      <View style={{marginBottom:15}}>
         {/* Carousel */}
         <Animated.FlatList
           ref={flatListRef}
@@ -228,6 +231,8 @@ const HomeScreen = () => {
           })}
         </View>
       </View>
+
+      <BannerAds/>
 
       <View style={{ marginHorizontal: 10, marginTop: 10, alignItems: 'center', backgroundColor: '#cef0d7', padding: 5, borderRadius: 10 , marginTop:30}}>
         <Text style={{ fontSize: 18, fontWeight: '600', color: '#2f3640' }}>

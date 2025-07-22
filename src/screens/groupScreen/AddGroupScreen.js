@@ -4,26 +4,24 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import { useNavigation } from '@react-navigation/native'
 import Loading from '../../components/Loading'
 import { addDoc } from 'firebase/firestore'
-import { tripsRef } from '../../config/firebse'
+import { addgroupRef, tripsRef } from '../../config/firebse'
 import { useSelector } from 'react-redux'
 import { useAuth } from '../../context/AuthContext'
 import BannerAds from '../adManager/BannerAds'
-const AddTripScreen = () => {
+const AddGroupScreen = () => {
     const navigation = useNavigation()
 
-    const [place, setPlace] = useState('')
+    const [groupName, setGroupName] = useState('')
     const { userData} = useAuth();
-    const [countery, setCountery] = useState('')
     const [loading, setLoading] = useState(false)
     const {user} = useSelector(state=> state.user)
 
     const handleAddTrip = async() => {
-        if (place && countery) {
+        if (groupName) {
             // console.log("click", user.uid, place, countery)
             setLoading(true)
-            let doc = await addDoc(tripsRef,{
-                place,
-                countery,
+            let doc = await addDoc(addgroupRef,{
+                groupName,
                 userId: userData.uid
             });
             // console.log("doc", doc)
@@ -44,17 +42,17 @@ const AddTripScreen = () => {
                     <TouchableOpacity onPress={() => navigation.goBack()}>
                         <Ionicons name='arrow-back-outline' size={25} color='black' />
                     </TouchableOpacity>
-                    <Text style={{ fontSize: 16, fontWeight: '700' }}>Add Trip</Text>
+                    <Text style={{ fontSize: 16, fontWeight: '700' }}>Create New Group</Text>
                 </View>
                 <View style={{ justifyContent: 'center', alignItems: 'center', marginBottom:15 }}>
                     <Image source={require('../../assets/sliderImage/trip.png')} style={{ width: 250, height: 220, borderRadius: 10 }} />
                 </View>
                 <BannerAds/>
                 <View style={{ marginHorizontal: 20 }}>
-                    <Text style={{ padding: 5, fontSize: 16, marginTop: 20 }}>Where on Earth</Text>
-                    <TextInput value={place} onChangeText={value => setPlace(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Enter here ...' />
-                    <Text style={{ padding: 5, fontSize: 16, marginTop: 20 }} >Which cuntery</Text>
-                    <TextInput value={countery} onChangeText={value => setCountery(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Enter here ...' />
+                    <Text style={{ padding: 5, fontSize: 16, marginTop: 20 }}>Group name</Text>
+                    <TextInput value={groupName} onChangeText={value => setGroupName(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Enter here group name ...' />
+                    {/* <Text style={{ padding: 5, fontSize: 16, marginTop: 20 }} >other info</Text>
+                    <TextInput value={countery} onChangeText={value => setCountery(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Enter here ...' /> */}
 
                 </View>
                 {
@@ -63,7 +61,7 @@ const AddTripScreen = () => {
                     ) :
                         (
                             <TouchableOpacity onPress={handleAddTrip} style={{ backgroundColor: '#e0ca4a', marginTop: 10, padding: 10, borderRadius: 20, marginHorizontal: 20, marginTop: 30 }}>
-                                <Text style={{ alignSelf: 'center' }}>Add Trip</Text>
+                                <Text style={{ alignSelf: 'center' }}>Create Group</Text>
                             </TouchableOpacity>
                         )
                 }
@@ -73,6 +71,6 @@ const AddTripScreen = () => {
     )
 }
 
-export default AddTripScreen
+export default AddGroupScreen
 
 const styles = StyleSheet.create({})

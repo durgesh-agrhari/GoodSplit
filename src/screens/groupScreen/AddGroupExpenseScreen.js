@@ -5,10 +5,10 @@ import { useNavigation } from '@react-navigation/native'
 
 import { categories } from '../../constants/index'
 import { addDoc } from 'firebase/firestore'
-import { expensesRef } from '../../config/firebse'
+import { addGroupExpenseRef, expensesRef } from '../../config/firebse'
 import Loading from '../../components/Loading'
 import BannerAds from '../adManager/BannerAds'
-const AddExpenseScreen = (propes) => {
+const AddGroupExpenseScreen = (propes) => {
     const {id} = propes.route.params;
     const navigation = useNavigation()
     // console.log("id exp ", id)
@@ -22,7 +22,7 @@ const AddExpenseScreen = (propes) => {
         if (title && amount && category) {
             // console.log("click", title, amount, categories)
             setLoading(true)
-            let doc = await addDoc(expensesRef, {
+            let doc = await addDoc(addGroupExpenseRef, {
                 title,
                 amount,
                 category,
@@ -46,7 +46,7 @@ const AddExpenseScreen = (propes) => {
                     <TouchableOpacity onPress={() => navigation.goBack()}>
                         <Ionicons name='arrow-back-outline' size={25} color='black' />
                     </TouchableOpacity>
-                    <Text style={{ fontSize: 16, fontWeight: '700' }}>Add Expances</Text>
+                    <Text style={{ fontSize: 16, fontWeight: '700' }}>Add Group Expances</Text>
                 </View>
                 <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                     <Image source={require('../../assets/sliderImage/expenseBanner.png')} style={{ width: 250, height: 220, borderRadius: 10 }} />
@@ -90,6 +90,6 @@ const AddExpenseScreen = (propes) => {
     )
 }
 
-export default AddExpenseScreen
+export default AddGroupExpenseScreen
 
 const styles = StyleSheet.create({})

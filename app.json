@@ -1,4 +1,8 @@
 {
   "name": "GoodSplit",
-  "displayName": "GoodSplit"
+  "displayName": "GoodSplit",
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-1779800052220862~8648480272",
+    "ios_app_id": "ca-app-pub-1779800052220862~8648480272"
+  }
 }

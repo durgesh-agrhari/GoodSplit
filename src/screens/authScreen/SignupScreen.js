@@ -7,8 +7,11 @@ import { auth } from '../../config/firebse'
 import { useDispatch, useSelector } from 'react-redux'
 import Loading from '../../components/Loading'
 import { setUserLoading } from '../../redux/slices/UserSlice'
+// import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { db } from '../../config/firebse'
 import { doc, setDoc } from 'firebase/firestore'
+import { useAuth } from '../../context/AuthContext'
 
 const SignupScreen = () => {
     const navigation = useNavigation()
@@ -19,40 +22,78 @@ const SignupScreen = () => {
 
     const { userLoading } = useSelector(state => state.user)
     const dispatch = useDispatch()
+    const { userData, userToken, login } = useAuth();
+
+
+    // const handleSubmit = async () => {
+    //     if (email && password && name) {
+    //         try {
+    //             dispatch(setUserLoading(true))
+    //             const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+    //             const user = userCredential.user
+    //             const uid = user.uid
+
+    //             // ✅ 1. Update Firebase Auth Profile
+    //             await updateProfile(user, {
+    //                 displayName: name,
+    //             })
+
+    //             // ✅ 2. Save data in Firestore
+    //             await setDoc(doc(db, 'users', uid), {
+    //                 displayName: name,
+    //                 email,
+    //                 uid,
+    //                 createdAt: new Date().toISOString(),
+    //             })
+
+    //             dispatch(setUserLoading(false))
+    //             console.log('Signup successful', name, email)
+    //             // navigation.navigate('Splacehome')
+    //         } catch (e) {
+    //             dispatch(setUserLoading(false))
+    //             console.log(e)
+    //             Alert.alert('Signup Failed', e.message || 'Please try again')
+    //         }
+    //     } else {
+    //         Alert.alert('All fields are required')
+    //     }
+    // }
 
     const handleSubmit = async () => {
-        if (email && password && name) {
-            try {
-                dispatch(setUserLoading(true))
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-                const user = userCredential.user
-                const uid = user.uid
+  if (email && password && name) {
+    try {
+      dispatch(setUserLoading(true));
 
-                // ✅ 1. Update Firebase Auth Profile
-                await updateProfile(user, {
-                    displayName: name,
-                })
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      const uid = user.uid;
 
-                // ✅ 2. Save data in Firestore
-                await setDoc(doc(db, 'users', uid), {
-                    displayName: name,
-                    email,
-                    uid,
-                    createdAt: new Date().toISOString(),
-                })
+      await updateProfile(user, {
+        displayName: name,
+      });
 
-                dispatch(setUserLoading(false))
-                console.log('Signup successful', name, email)
-                navigation.navigate('HomeScreen')
-            } catch (e) {
-                dispatch(setUserLoading(false))
-                console.log(e)
-                Alert.alert('Signup Failed', e.message || 'Please try again')
-            }
-        } else {
-            Alert.alert('All fields are required')
-        }
+      await setDoc(doc(db, 'users', uid), {
+        displayName: name,
+        email,
+        uid,
+        createdAt: new Date().toISOString(),
+      });
+
+      dispatch(setUserLoading(false));
+
+      // ✅ Reuse login function to trigger everything
+      await login(email, password);
+
+    } catch (e) {
+      dispatch(setUserLoading(false));
+      console.log(e);
+      Alert.alert('Signup Failed', e.message || 'Please try again');
     }
+  } else {
+    Alert.alert('All fields are required');
+  }
+};
+
 
     return (
         <SafeAreaView style={{ marginTop: 20 }}>

@@ -6,6 +6,7 @@ import Loading from '../../components/Loading';
 import { addDoc } from 'firebase/firestore';
 import { feedbackRef } from '../../config/firebse';
 import { useSelector } from 'react-redux';
+import { useAuth } from '../../context/AuthContext';
 
 const FeedbackScreen = () => {
   const navigation = useNavigation();
@@ -13,13 +14,15 @@ const FeedbackScreen = () => {
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const { user } = useSelector(state => state.user);
+  const { userData } = useAuth();
+
 
   const handleSendFeedback = async () => {
     if (description.trim()) {
       setLoading(true);
       let doc = await addDoc(feedbackRef, {
         description,
-        userId: user.uid,
+        userId: userData.uid,
         createdAt: new Date()
       });
       setLoading(false);

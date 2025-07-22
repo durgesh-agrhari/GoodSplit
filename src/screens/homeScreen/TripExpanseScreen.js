@@ -8,6 +8,7 @@ import ExpanceCard from './ExpanceCard'
 import { useIsFocused, useNavigation } from '@react-navigation/native'
 import { deleteDoc, getDocs, query, where ,doc} from 'firebase/firestore'
 import { expensesRef } from '../../config/firebse'
+import BannerAds from '../adManager/BannerAds'
 
 
 const TripExpanseScreen = (props) => {
@@ -84,9 +85,10 @@ const handleDeleteExpense = async (expenseId) => {
             <Text style={{ fontSize: 12, fontWeight: '500', opacity: 0.6 }}>{countery}</Text>
           </View>
         </View>
-        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{ justifyContent: 'center', alignItems: 'center', marginBottom:5 }}>
           <Image source={require('../../assets/sliderImage/1.png')} style={{ width: 250, height: 220, borderRadius: 10 }} />
         </View>
+        <BannerAds/>
         <View style={{ marginHorizontal: 10, marginTop: 10, alignItems: 'center', backgroundColor: '#cef0d7', padding: 5, borderRadius: 10 }}>
           <Text style={{ fontSize: 18, fontWeight: '600', color: '#2f3640' }}>
             Total Spent: ₹{total.toFixed(2)}
@@ -119,7 +121,6 @@ const handleDeleteExpense = async (expenseId) => {
             )}
             keyExtractor={(item) => item.id}
           />
-
         </ScrollView>
       </View>
     </SafeAreaView>

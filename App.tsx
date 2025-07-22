@@ -3,11 +3,14 @@ import React from 'react'
 import AppNavigator from './src/navigation/AppNavigator'
 import { Provider } from 'react-redux'
 import { store } from './src/redux/Store'
+import { AuthProvider } from './src/context/AuthContext'
 
 const App = () => {
   return (
     <Provider store={store}>
-      <AppNavigator/>
+      <AuthProvider>
+        <AppNavigator/>
+      </AuthProvider>
     </Provider>
 )
 }
