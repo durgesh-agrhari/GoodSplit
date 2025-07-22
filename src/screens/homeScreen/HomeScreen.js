@@ -5,6 +5,7 @@ import {
   Dimensions,
   FlatList,
   Image,
+  Modal,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -23,6 +24,7 @@ import { useSelector } from 'react-redux';
 import { deleteDoc, doc, getDocs, query, where } from 'firebase/firestore';
 import { useAuth } from '../../context/AuthContext';
 import BannerAds from '../adManager/BannerAds';
+// import BannerAds from '../adManager/BannerAds';
 
 const { width } = Dimensions.get('window');
 const ITEM_WIDTH = width * 0.85;
@@ -30,8 +32,8 @@ const SPACER = (width - ITEM_WIDTH) / 2;
 
 const originalData = [
   { id: '1', uri: require('../../assets/logo/1.png') },
-  { id: '2', uri: require('../../assets/logo/2.png')  },
-  { id: '3', uri: require('../../assets/logo/3.png')  },
+  { id: '2', uri: require('../../assets/logo/2.png') },
+  { id: '3', uri: require('../../assets/logo/3.png') },
 ];
 
 // Add fake first and last items for looping illusion
@@ -42,7 +44,7 @@ const data = [
 ];
 
 const HomeScreen = () => {
-  const { userData} = useAuth();
+  const { userData } = useAuth();
   const navigation = useNavigation()
   const scrollX = useRef(new Animated.Value(0)).current;
   const flatListRef = useRef(null);
@@ -52,21 +54,10 @@ const HomeScreen = () => {
   const [tripTotals, setTripTotals] = useState({});
   const [totalSpent, setTotalSpent] = useState(0);
 
-
-  // console.log("user data", user.email, user)
-
   const isFocused = useIsFocused()
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [groupToDelete, setGroupToDelete] = useState(null);
 
-  const confirmDeleteTrip = (tripId) => {
-  Alert.alert(
-    "Delete Trip",
-    "Are you sure you want to delete this trip?",
-    [
-      { text: "Cancel", style: "cancel" },
-      { text: "Delete", style: "destructive", onPress: () => handleDeleteTrip(tripId) }
-    ]
-  );
-};
 
   // const fetchTrip = async () => {
   //   const q = query(tripsRef, where("userId", "==", user.uid));
@@ -143,6 +134,7 @@ const HomeScreen = () => {
 
 
   const handleDeleteTrip = async (tripId) => {
+    console.log("click delete", tripId)
     try {
       await deleteDoc(doc(tripsRef, tripId));
       // Update state to remove the deleted trip
@@ -159,11 +151,50 @@ const HomeScreen = () => {
       console.error("Failed to delete trip:", error);
     }
   };
-
-
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff', marginTop: 20 }}>
+      {showDeleteConfirm && (
+        <Modal
+          transparent
+          animationType="fade"
+          visible={showDeleteConfirm}
+          onRequestClose={() => setShowDeleteConfirm(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>Delete Group</Text>
+              <Text style={{ textAlign: 'center', marginBottom: 20 }}>
+                Are you sure you want to delete this group?
+              </Text>
+
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setShowDeleteConfirm(false);
+                  }}
+                  style={styles.modalButtonCancel}
+                >
+                  <Text style={{ color: 'black' }}>Cancel</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => {
+                    if (groupToDelete) {
+                      handleDeleteTrip(groupToDelete);
+                    }
+                    setShowDeleteConfirm(false);
+                  }}
+                  style={styles.modalButtonDelete}
+                >
+                  <Text style={{ color: 'white' }}>Delete</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      )}
+
+
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
@@ -183,7 +214,7 @@ const HomeScreen = () => {
           <Ionicons name="notifications-sharp" color="#2a2e2c" size={25} />
         </TouchableOpacity> */}
       </View>
-      <View style={{marginBottom:15}}>
+      <View style={{ marginBottom: 15 }}>
         {/* Carousel */}
         <Animated.FlatList
           ref={flatListRef}
@@ -232,9 +263,9 @@ const HomeScreen = () => {
         </View>
       </View>
 
-      <BannerAds/>
+      <BannerAds />
 
-      <View style={{ marginHorizontal: 10, marginTop: 10, alignItems: 'center', backgroundColor: '#cef0d7', padding: 5, borderRadius: 10 , marginTop:30}}>
+      <View style={{ marginHorizontal: 10, marginTop: 10, alignItems: 'center', backgroundColor: '#cef0d7', padding: 5, borderRadius: 10, marginTop: 30 }}>
         <Text style={{ fontSize: 18, fontWeight: '600', color: '#2f3640' }}>
           Total Spent: ₹{totalSpent.toFixed(2)}
         </Text>
@@ -247,7 +278,7 @@ const HomeScreen = () => {
           <Text>Add Trip</Text>
         </TouchableOpacity>
       </View>
-      <ScrollView showsVerticalScrollIndicator={false} style={{ paddingTop: 10, paddingBottom: 20 }}>
+      <View showsVerticalScrollIndicator={false} style={{ paddingTop: 10, paddingBottom: 20 }}>
         <FlatList
           data={trips}
           // numColumns={2}
@@ -273,8 +304,8 @@ const HomeScreen = () => {
                       <Text style={{ fontWeight: '600', color: 'green', fontSize: 12 }}>Total Spend</Text>
                       <Text style={{ fontWeight: '600', color: "red" }}>₹ {tripTotals[item.id]?.toFixed(2) || 0}</Text>
                     </View>
-                    <TouchableOpacity
-                      onPress={() => confirmDeleteTrip(item.id)} // <-- Add this
+                    {/* <TouchableOpacity
+                      onPress={() => handleDeleteTrip(item.id)} // <-- Add this
                       style={{
                         marginLeft: 10,
                         padding: 8,
@@ -283,7 +314,16 @@ const HomeScreen = () => {
                       }}
                     >
                       <MaterialIcons name="delete-outline" size={20} color='white' />
+                    </TouchableOpacity> */}
+                    <TouchableOpacity
+                      onPress={() => {
+                        setGroupToDelete(item.id);
+                        setShowDeleteConfirm(true);
+                      }}
+                    >
+                      <MaterialIcons name="delete-outline" size={24} color="red" />
                     </TouchableOpacity>
+
 
                   </View>
 
@@ -292,7 +332,7 @@ const HomeScreen = () => {
             )
           }}
         />
-      </ScrollView>
+      </View>
 
     </SafeAreaView>
   );
@@ -347,5 +387,37 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: 'black',
     marginHorizontal: 4,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 20,
+    width: '80%',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  modalButtonCancel: {
+    backgroundColor: '#f0f0f0',
+    padding: 10,
+    borderRadius: 8,
+    width: '45%',
+    alignItems: 'center',
+  },
+  modalButtonDelete: {
+    backgroundColor: '#ff3b30',
+    padding: 10,
+    borderRadius: 8,
+    width: '45%',
+    alignItems: 'center',
   },
 });

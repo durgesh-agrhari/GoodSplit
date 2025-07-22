@@ -7,10 +7,11 @@ import randemImage from '../../assets/sliderImage/randemImage'
 // import ExpanceCard from './ExpanceCard'
 import { useIsFocused, useNavigation } from '@react-navigation/native'
 import { deleteDoc, getDocs, query, where, doc } from 'firebase/firestore'
-import { addGroupExpenseRef, expensesRef } from '../../config/firebse'
+import { addGroupExpenseRef, expensesRef, GroupExpenseRef } from '../../config/firebse'
 import BannerAds from '../adManager/BannerAds'
 import EmpityList from '../homeScreen/EmpityList'
 import ExpanceCard from '../homeScreen/ExpanceCard'
+import GroupExpanceCard from './ExpanceCard'
 
 
 const GroupExpanseScreen = (props) => {
@@ -22,19 +23,8 @@ const GroupExpanseScreen = (props) => {
 
   const isFocused = useIsFocused()
 
-  // const fetchExpences = async () => {
-  //   const q = query(expensesRef, where("tripId", "==", id));
-  //   const querySnapsot = await getDocs(q);
-  //   let data = [];
-  //   querySnapsot.forEach(doc => {
-  //     // console.log("docs string ",doc.data())
-  //     data.push(({ ...doc.data(), id: doc.id }))
-  //   });
-  //   setExpenses(data)
-  // }
-
   const fetchExpences = async () => {
-    const q = query(addGroupExpenseRef, where("tripId", "==", id));
+    const q = query(GroupExpenseRef, where("groupExpenseId", "==", id));
     const querySnapsot = await getDocs(q);
     let data = [];
     let sum = 0;
@@ -61,7 +51,7 @@ const GroupExpanseScreen = (props) => {
 
   const handleDeleteExpense = async (expenseId) => {
     try {
-      await deleteDoc(doc(expensesRef, expenseId));
+      await deleteDoc(doc(GroupExpenseRef, expenseId));
       setExpenses(prev => prev.filter(item => item.id !== expenseId));
 
       // Recalculate total
@@ -135,7 +125,7 @@ const GroupExpanseScreen = (props) => {
             ListEmptyComponent={EmpityList()}
             showsVerticalScrollIndicator={false}
             renderItem={({ item }) => (
-              <ExpanceCard item={item} onDelete={handleDeleteExpense} />
+              <GroupExpanceCard item={item} onDelete={handleDeleteExpense} />
             )}
             keyExtractor={(item) => item.id}
           />

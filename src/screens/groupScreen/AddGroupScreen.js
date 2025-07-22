@@ -4,24 +4,24 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import { useNavigation } from '@react-navigation/native'
 import Loading from '../../components/Loading'
 import { addDoc } from 'firebase/firestore'
-import { addgroupRef, tripsRef } from '../../config/firebse'
+import { groupRef} from '../../config/firebse'
 import { useSelector } from 'react-redux'
 import { useAuth } from '../../context/AuthContext'
 import BannerAds from '../adManager/BannerAds'
 const AddGroupScreen = () => {
     const navigation = useNavigation()
 
-    const [groupName, setGroupName] = useState('')
+    const [title, setTitle] = useState('')
     const { userData} = useAuth();
     const [loading, setLoading] = useState(false)
     const {user} = useSelector(state=> state.user)
 
     const handleAddTrip = async() => {
-        if (groupName) {
+        if ( title ) {
             // console.log("click", user.uid, place, countery)
             setLoading(true)
-            let doc = await addDoc(addgroupRef,{
-                groupName,
+            let doc = await addDoc(groupRef,{
+                title,
                 userId: userData.uid
             });
             // console.log("doc", doc)
@@ -42,18 +42,15 @@ const AddGroupScreen = () => {
                     <TouchableOpacity onPress={() => navigation.goBack()}>
                         <Ionicons name='arrow-back-outline' size={25} color='black' />
                     </TouchableOpacity>
-                    <Text style={{ fontSize: 16, fontWeight: '700' }}>Create New Group</Text>
+                    <Text style={{ fontSize: 16, fontWeight: '700' }}>Add Group Trip</Text>
                 </View>
                 <View style={{ justifyContent: 'center', alignItems: 'center', marginBottom:15 }}>
                     <Image source={require('../../assets/sliderImage/trip.png')} style={{ width: 250, height: 220, borderRadius: 10 }} />
                 </View>
                 <BannerAds/>
                 <View style={{ marginHorizontal: 20 }}>
-                    <Text style={{ padding: 5, fontSize: 16, marginTop: 20 }}>Group name</Text>
-                    <TextInput value={groupName} onChangeText={value => setGroupName(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Enter here group name ...' />
-                    {/* <Text style={{ padding: 5, fontSize: 16, marginTop: 20 }} >other info</Text>
-                    <TextInput value={countery} onChangeText={value => setCountery(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Enter here ...' /> */}
-
+                    <Text style={{ padding: 5, fontSize: 16, marginTop: 20 }}>Group title</Text>
+                    <TextInput value={title} onChangeText={value => setTitle(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Entergroup title here ...' />
                 </View>
                 {
                     loading ? (
@@ -61,7 +58,7 @@ const AddGroupScreen = () => {
                     ) :
                         (
                             <TouchableOpacity onPress={handleAddTrip} style={{ backgroundColor: '#e0ca4a', marginTop: 10, padding: 10, borderRadius: 20, marginHorizontal: 20, marginTop: 30 }}>
-                                <Text style={{ alignSelf: 'center' }}>Create Group</Text>
+                                <Text style={{ alignSelf: 'center' }}>Add Trip</Text>
                             </TouchableOpacity>
                         )
                 }

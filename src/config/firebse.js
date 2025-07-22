@@ -29,8 +29,8 @@ export const tripsRef = collection(db, 'trips');
 export const expensesRef = collection(db, 'expenses');
 export const feedbackRef = collection(db, 'feedbacks');
 
-export const addgroupRef = collection(db, 'groups');
-export const addMemberRef = collection(db, 'members');
-export const addGroupExpenseRef = collection(db, 'groupexpenses');
+export const groupRef = collection(db, 'groups');
+export const MemberRef = collection(db, 'members');
+export const GroupExpenseRef = collection(db, 'groupexpenses');
 
 export default app

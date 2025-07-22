@@ -25,6 +25,7 @@ import { useAuth } from '../context/AuthContext';
 import AddGroupScreen from '../screens/groupScreen/AddGroupScreen';
 import GroupExpanseScreen from '../screens/groupScreen/GroupExpanseScreen';
 import AddGroupExpenseScreen from '../screens/groupScreen/AddGroupExpenseScreen';
+import GroupExpanceCard from '../screens/groupScreen/ExpanceCard';
 
 const Stack = createNativeStackNavigator();
 
@@ -74,6 +75,7 @@ const AppNavigator = () => {
           <Stack.Screen name="ExpenseScreen" component={TripExpanseScreen} />
           <Stack.Screen name="GroupExpanseScreen" component={GroupExpanseScreen} />
           <Stack.Screen name="AboutScreen" component={AboutScreen} />
+          <Stack.Screen name="GroupExpanceCard" component={GroupExpanceCard} />
           <Stack.Screen name="AddGroupExpenseScreen" component={AddGroupExpenseScreen} />
           <Stack.Screen name="PrivacyPolicyScreen" component={PrivacyPolicyScreen} />
           <Stack.Screen name="FeedbackScreen" component={FeedbackScreen} />

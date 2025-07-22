@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native'
 
 import { categories } from '../../constants/index'
 import { addDoc } from 'firebase/firestore'
-import { addGroupExpenseRef, expensesRef } from '../../config/firebse'
+import { addGroupExpenseRef, expensesRef, GroupExpenseRef } from '../../config/firebse'
 import Loading from '../../components/Loading'
 import BannerAds from '../adManager/BannerAds'
 const AddGroupExpenseScreen = (propes) => {
@@ -22,11 +22,11 @@ const AddGroupExpenseScreen = (propes) => {
         if (title && amount && category) {
             // console.log("click", title, amount, categories)
             setLoading(true)
-            let doc = await addDoc(addGroupExpenseRef, {
+            let doc = await addDoc(GroupExpenseRef, {
                 title,
                 amount,
                 category,
-                tripId: id
+                groupExpenseId: id
             });
             // console.log("doc", doc)
             setLoading(false)
