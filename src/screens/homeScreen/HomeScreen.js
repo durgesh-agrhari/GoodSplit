@@ -278,7 +278,7 @@ const HomeScreen = () => {
           <Text>Add Trip</Text>
         </TouchableOpacity>
       </View>
-      <View showsVerticalScrollIndicator={false} style={{ paddingTop: 10, paddingBottom: 20 }}>
+      <ScrollView showsVerticalScrollIndicator={false} style={{ paddingTop: 10, paddingBottom: 20 }}>
         <FlatList
           data={trips}
           // numColumns={2}
@@ -332,7 +332,7 @@ const HomeScreen = () => {
             )
           }}
         />
-      </View>
+      </ScrollView>
 
     </SafeAreaView>
   );
