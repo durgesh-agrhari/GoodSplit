@@ -1,3 +1,18 @@
+// import { StyleSheet, Text, View } from 'react-native'
+// import React from 'react'
+
+// const BannerAds = () => {
+//   return (
+//     <View>
+//       <Text style={{alignSelf:'center'}}>BannerAds</Text>
+//     </View>
+//   )
+// }
+
+// export default BannerAds
+
+// const styles = StyleSheet.create({})
+
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 

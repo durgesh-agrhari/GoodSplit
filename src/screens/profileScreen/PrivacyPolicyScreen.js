@@ -16,7 +16,7 @@ const PrivacyPolicyScreen = () => {
 
       {/* App Logo */}
       <Image
-        source={require('../../assets/logo/logo.jpeg')} // replace with your actual logo path
+        source={require('../../assets/logo/logo.png')} // replace with your actual logo path
         style={styles.logo}
         resizeMode="contain"
       />

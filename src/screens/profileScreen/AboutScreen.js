@@ -14,7 +14,7 @@ const AboutScreen = () => {
               </TouchableOpacity>
         
       <Image
-        source={require('../../assets/logo/logo.jpeg')} // Replace with your app icon or image
+        source={require('../../assets/logo/logo.png')} // Replace with your app icon or image
         style={styles.logo}
       />
       <Text style={styles.appName}>GoodSplit</Text>

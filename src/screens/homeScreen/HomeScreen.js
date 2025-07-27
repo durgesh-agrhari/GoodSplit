@@ -199,7 +199,7 @@ const HomeScreen = () => {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Image
-            source={require('../../assets/logo/logo.jpeg')}
+            source={require('../../assets/logo/logo.png')}
             style={styles.avatar}
           />
           <Text style={styles.title}>GoodSplit</Text>
@@ -319,6 +319,12 @@ const HomeScreen = () => {
                       onPress={() => {
                         setGroupToDelete(item.id);
                         setShowDeleteConfirm(true);
+                      }}
+                       style={{
+                        marginLeft: 10,
+                        padding: 8,
+                        backgroundColor: '#dbdbd9',
+                        borderRadius: 50
                       }}
                     >
                       <MaterialIcons name="delete-outline" size={24} color="red" />

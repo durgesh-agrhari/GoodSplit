@@ -85,21 +85,21 @@ const GroupExpanseScreen = (props) => {
           </Text>
         </View>
 
-         <View style={{ flexDirection: 'row', justifyContent: 'space-between' , marginHorizontal:8, backgroundColor:'#d6d0d0', padding:5, borderRadius:20, marginTop:20}}>
+         {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between' , marginHorizontal:8, backgroundColor:'#d6d0d0', padding:5, borderRadius:20, marginTop:20}}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' , alignItems:'center'}}>
             <View style={styles.container}>
               <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEvkMZtGOAhpFvkJeuC-pRRrFFaQ9nL0NRTqoBAhLgzGxBwM-29_a4s5R0WwfDIg-1BOk&usqp=CAU' }} style={[styles.circle, { backgroundColor: '#00FFFF', left: -40 }]} />
               <Image source={{ uri: 'https://static.vecteezy.com/system/resources/thumbnails/002/002/257/small_2x/beautiful-woman-avatar-character-icon-free-vector.jpg' }} style={[styles.circle, { backgroundColor: '#0000FF', left: -20 }]} />
               <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6W8j59cb5rvLX_rYPVcqZ67MVfShKc87w1IafvcFi0_7ytM4mGshNvIZjJFC5RMiEfqw&usqp=CAU' }} style={[styles.circle, { backgroundColor: '#800080', left: 0 }]} />
               <Image source={{ uri: 'https://img.freepik.com/premium-vector/avatar-portrait-young-caucasian-woman-round-frame-vector-cartoon-flat-illustration_551425-22.jpg' }} style={[styles.circle, { backgroundColor: '#FF00FF', left: 20 }]} />
-              {/* <Image source={{ uri: 'https://img.freepik.com/premium-vector/young-man-avatar-character-due-avatar-man-vector-icon-cartoon-illustration_1186924-4438.jpg?semt=ais_items_boosted&w=740' }} style={[styles.circle, { backgroundColor: '#FFC0CB', left: 40 }]} /> */}
+              <Image source={{ uri: 'https://img.freepik.com/premium-vector/young-man-avatar-character-due-avatar-man-vector-icon-cartoon-illustration_1186924-4438.jpg?semt=ais_items_boosted&w=740' }} style={[styles.circle, { backgroundColor: '#FFC0CB', left: 40 }]} />
             </View>
             <Text style={{ fontSize: 14, marginLeft:60}}>Total 4 member</Text>
           </View>
           <TouchableOpacity style={{backgroundColor:'gray', padding:5, paddingLeft:15, paddingRight:15, borderRadius:20}}>
             <Text>See Members</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
 
 

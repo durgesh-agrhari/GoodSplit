@@ -437,10 +437,10 @@ const GroupScreen = () => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Image source={require('../../assets/logo/logo.jpeg')} style={styles.avatar} />
+          <Image source={require('../../assets/logo/logo.png')} style={styles.avatar} />
           <Text style={styles.title}>GoodSplit</Text>
         </View>
-      
+
       </View>
 
       {/* Carousel */}
@@ -471,7 +471,7 @@ const GroupScreen = () => {
           </View>
         )}
       /> */}
-{/* 
+      {/* 
       <View style={styles.pagination}>
         {originalData.map((_, i) => {
           const inputRange = [
@@ -510,7 +510,7 @@ const GroupScreen = () => {
         keyExtractor={items => items.id}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => navigation.navigate('GroupExpanseScreen', { ...item })} style={{ backgroundColor: '#f2f3f5', borderRadius: 10, margin: 10, marginTop: 15 }}>
+          <TouchableOpacity onPress={() => navigation.navigate('GroupExpanseScreen', { ...item })} style={{ backgroundColor: '#f2f3f5', borderRadius: 10, margin: 10, marginTop: 15, padding: 15 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                 <View style={{ marginTop: -60, marginLeft: -5 }}>
@@ -522,13 +522,13 @@ const GroupScreen = () => {
                       setGroupToDelete(item.id);
                       setShowDeleteConfirm(true);
                     }}
-                    style={{ padding: 6, backgroundColor: '#d6d0d0', borderRadius: 50 }}
+                    style={{ padding: 6, backgroundColor: '#d6d0d0', borderRadius: 50, marginLeft: -15 }}
                   >
                     <MaterialIcons name="delete-outline" size={24} color="red" />
                   </TouchableOpacity>
 
                 </View>
-                <Image source={randemImage()} style={{ width: 60, height: 80, borderRadius: 10, marginLeft: -10 }} />
+                <Image source={randemImage()} style={{ width: 40, height: 40, borderRadius: 10, marginLeft: -30 }} />
                 <View>
                   <Text style={{ fontWeight: '800', marginLeft: 10 }}>{item.title}</Text>
                   <Text style={{ fontWeight: '600', color: 'green', fontSize: 12, marginLeft: 10 }}>Total Spend</Text>
@@ -541,25 +541,7 @@ const GroupScreen = () => {
                   <Text style={{ fontWeight: '600', color: 'green', fontSize: 12 }}>you are owed</Text>
                   <Text style={{ fontWeight: '600', color: "red" }}>₹ {tripTotals[item.id]?.toFixed(2) || 0}</Text>
                 </View> */}
-                <View style={{ marginRight: 5 }}>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate('GroupExpanseScreen', { ...item })}
-                    style={{ backgroundColor: '#c4c0c0', padding: 5, borderRadius: 10, paddingLeft: 10, paddingRight: 10, margin: 2 }}
-                  >
-                    <Text style={{ fontSize: 12 }}>Add Expences </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={async () => {
-                      setSelectedGroupId(item.id);
-                      await fetchMembers(item.id);
-                      setShowMemberPopup(true);
-                    }}
-                    style={{ backgroundColor: '#c4c0c0', padding: 5, borderRadius: 10, paddingLeft: 10, paddingRight: 10, margin: 2 }}
 
-                  >
-                    <Text style={{ fontSize: 12 }}>Member Details </Text>
-                  </TouchableOpacity>
-                </View>
                 <View style={{ marginLeft: 5 }}>
 
                   <TouchableOpacity
@@ -582,15 +564,34 @@ const GroupScreen = () => {
                   </TouchableOpacity>
 
                   <TouchableOpacity
+                    onPress={() => {
+                      setSelectedGroupId(item.id);
+                      setIsAddMemberModalVisible(true);
+                    }}
+                  >
+                    <Text style={{ fontSize: 12, marginLeft: 8, marginTop: 3 }}>Add Member</Text>
+                  </TouchableOpacity>
+
+                </View>
+
+                <View style={{ marginLeft: 15 , marginRight:-20}}>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('GroupExpanseScreen', { ...item })}
+                    style={{ backgroundColor: '#c4c0c0', padding: 7, borderRadius: 10, paddingLeft: 10, paddingRight: 10, margin: 5 }}
+                  >
+                    <Text style={{ fontSize: 12 }}>Add Expences +</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
                     onPress={async () => {
                       setSelectedGroupId(item.id);
                       await fetchMembers(item.id);
                       setShowMemberPopup(true);
                     }}
-                  >
-                    <Text style={{ fontSize: 12, marginLeft: 15 }}>{memberCounts[item.id] || 0} members</Text>
-                  </TouchableOpacity>
+                    style={{ backgroundColor: '#c4c0c0', padding: 7, borderRadius: 10, paddingLeft: 10, paddingRight: 10, margin: 5 }}
 
+                  >
+                    <Text style={{ fontSize: 12 }}>{memberCounts[item.id] || 0} Member Details </Text>
+                  </TouchableOpacity>
                 </View>
               </View>
             </View>
