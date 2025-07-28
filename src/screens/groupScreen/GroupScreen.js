@@ -17,7 +17,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import randemImage from '../../assets/sliderImage/randemImage';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { deleteDoc, doc, getDocs, query, where, addDoc } from 'firebase/firestore';
+import { deleteDoc, doc, getDocs, query, where, addDoc, updateDoc } from 'firebase/firestore';
 import { auth, GroupExpenseRef, groupRef } from '../../config/firebse';
 import { useSelector } from 'react-redux';
 import { useAuth } from '../../context/AuthContext';
@@ -60,6 +60,52 @@ const GroupScreen = () => {
   const [memberShares, setMemberShares] = useState([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [groupToDelete, setGroupToDelete] = useState(null);
+
+  const [paidStatus, setPaidStatus] = useState({});
+
+//   const togglePaidStatus = async (memberId, groupId, isPaid) => {
+//   try {
+//     // Update in Firestore
+//     const memberDocRef = doc(MemberRef, 'members', memberId);
+//     await updateDoc(memberDocRef, {
+//       paid: !isPaid,
+//     });
+
+//     // Update in local state
+//     setMembers((prevMembers) =>
+//       prevMembers.map((member) =>
+//         member.id === memberId ? { ...member, paid: !isPaid } : member
+//       )
+//     );
+//   } catch (error) {
+//     console.error('Error updating paid status:', error);
+//   }
+// };
+
+const togglePaidStatus = async (memberId, isPaid) => {
+  try {
+    // Correct document reference
+    const memberDocRef = doc(MemberRef, memberId);
+
+    // Update the 'paid' field in Firestore
+    await updateDoc(memberDocRef, {
+      paid: !isPaid,
+    });
+
+    // Update local state
+    setMembers((prevMembers) =>
+      prevMembers.map((member) =>
+        member.id === memberId ? { ...member, paid: !isPaid } : member
+      )
+    );
+  } catch (error) {
+    console.error('Error updating paid status:', error);
+  }
+};
+
+
+
+
 
 
 
@@ -363,7 +409,7 @@ const GroupScreen = () => {
         </Modal>
       )} */}
 
-      {showMemberPopup && (
+      {/* {showMemberPopup && (
         <Modal
           transparent
           animationType="slide"
@@ -382,19 +428,23 @@ const GroupScreen = () => {
                   backgroundColor: '#cef0d7',
                   padding: 5,
                   borderRadius: 10,
+                  marginBottom:15
                 }}
               >
+
                 <Text style={{ fontSize: 18, fontWeight: '600', color: '#2f3640' }}>
-                  Total Spent: ₹{totalSpent.toFixed(2)}
+                  Total Spent: ₹{tripTotals[selectedGroupId]?.toFixed(2) || '0.00'}
                 </Text>
+
                 <Text style={{ fontSize: 16, color: '#2f3640' }}>
                   Each Member Pays: ₹
-                  {(members.length > 0 ? (totalSpent / members.length).toFixed(2) : 0)}
+                  {(members.length > 0 && tripTotals[selectedGroupId] ? (tripTotals[selectedGroupId] / members.length).toFixed(2) : 0)}
                 </Text>
+
               </View>
 
               {members.length === 0 ? (
-                <Text style={{ textAlign: 'center', marginTop: 20 }}>
+                <Text style={{ textAlign: 'center', marginTop: 20 , marginBottom:20}}>
                   No members added yet.
                 </Text>
               ) : (
@@ -412,10 +462,13 @@ const GroupScreen = () => {
                       <Text>
                         {index + 1}. {m.name} ({m.title})
                       </Text>
+        
                       <Text style={{ color: 'gray' }}>
-                        Owes: ₹{(totalSpent / members.length).toFixed(2)}
+                        Owes: ₹{(members.length > 0 && tripTotals[selectedGroupId] ? (tripTotals[selectedGroupId] / members.length).toFixed(2) : 0)}
                       </Text>
+
                     </View>
+                    
                     <TouchableOpacity onPress={() => deleteMember(m.id)}>
                       <MaterialIcons name="delete-outline" size={20} color="red" />
                     </TouchableOpacity>
@@ -425,14 +478,114 @@ const GroupScreen = () => {
 
               <TouchableOpacity
                 onPress={() => setShowMemberPopup(false)}
-                style={styles.modalButtonCancel}
+                style={[styles.modalButtonCancel,{marginTop:15}]}
               >
                 <Text style={{ color: 'green', textAlign: 'center' }}>Close</Text>
               </TouchableOpacity>
             </View>
           </View>
         </Modal>
-      )}
+      )} */}
+
+      {showMemberPopup && (
+  <Modal
+    transparent
+    animationType="slide"
+    visible={showMemberPopup}
+    onRequestClose={() => setShowMemberPopup(false)}
+  >
+    <View style={styles.modalOverlay}>
+      <View style={styles.modalContainer}>
+        <Text style={styles.modalTitle}>Group Members</Text>
+
+        <View
+          style={{
+            marginHorizontal: 10,
+            marginTop: 10,
+            alignItems: 'center',
+            backgroundColor: '#cef0d7',
+            padding: 5,
+            borderRadius: 10,
+            marginBottom: 15,
+          }}
+        >
+          <Text style={{ fontSize: 18, fontWeight: '600', color: '#2f3640' }}>
+            Total Spent: ₹{tripTotals[selectedGroupId]?.toFixed(2) || '0.00'}
+          </Text>
+          <Text style={{ fontSize: 16, color: '#2f3640' }}>
+            Each Member Pays: ₹
+            {(members.length > 0 && tripTotals[selectedGroupId]
+              ? (tripTotals[selectedGroupId] / members.length).toFixed(2)
+              : 0)}
+          </Text>
+        </View>
+
+        {members.length === 0 ? (
+          <Text style={{ textAlign: 'center', marginTop: 20, marginBottom: 20 }}>
+            No members added yet.
+          </Text>
+        ) : (
+          members.map((m, index) => (
+            <View
+              key={m.id}
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                marginVertical: 5,
+                alignItems: 'center',
+              }}
+            >
+              <View>
+                <Text
+                  style={{
+                    textDecorationLine: m.paid ? 'line-through' : 'none',
+                    color: m.paid ? 'green' : 'red',
+                  }}
+                >
+                  {index + 1}. {m.name} ({m.title})
+                </Text>
+                <Text style={{ color: 'gray' }}>
+                  Owes: ₹
+                  {(members.length > 0 && tripTotals[selectedGroupId]
+                    ? (tripTotals[selectedGroupId] / members.length).toFixed(2)
+                    : 0)}
+                </Text>
+              </View>
+
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <TouchableOpacity
+                  onPress={() => togglePaidStatus(m.id)}
+                  style={{
+                    padding: 5,
+                    backgroundColor: m.paid ? '#d4edda' : '#f8d7da',
+                    borderRadius: 5,
+                    marginRight: 10,
+                  }}
+                >
+                  <Text style={{ color: m.paid ? 'green' : 'red' }}>
+                    {m.paid ? 'Paid' : 'Unpaid'}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => deleteMember(m.id)}>
+                  <MaterialIcons name="delete-outline" size={20} color="red" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))
+        )}
+
+        <TouchableOpacity
+          onPress={() => setShowMemberPopup(false)}
+          style={[styles.modalButtonCancel, { marginTop: 15 }]}
+        >
+          <Text style={{ color: 'green', textAlign: 'center' }}>Close</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </Modal>
+)}
+
 
       {/* Header */}
       <View style={styles.header}>
@@ -531,7 +684,7 @@ const GroupScreen = () => {
                 <Image source={randemImage()} style={{ width: 40, height: 40, borderRadius: 10, marginLeft: -30 }} />
                 <View>
                   <Text style={{ fontWeight: '800', marginLeft: 10 }}>{item.title}</Text>
-                  <Text style={{ fontWeight: '600', color: 'green', fontSize: 12, marginLeft: 10 }}>Total Spend</Text>
+                  <Text style={{ fontWeight: '600', color: 'green', fontSize: 12, marginLeft: 10 }}>Group Spend</Text>
                   <Text style={{ fontWeight: '600', color: "#db4649", marginLeft: 10 }}>₹ {tripTotals[item.id]?.toFixed(2) || 0}</Text>
                 </View>
               </View>
@@ -574,7 +727,7 @@ const GroupScreen = () => {
 
                 </View>
 
-                <View style={{ marginLeft: 15 , marginRight:-20}}>
+                <View style={{ marginLeft: 15, marginRight: -20 }}>
                   <TouchableOpacity
                     onPress={() => navigation.navigate('GroupExpanseScreen', { ...item })}
                     style={{ backgroundColor: '#c4c0c0', padding: 7, borderRadius: 10, paddingLeft: 10, paddingRight: 10, margin: 5 }}
@@ -696,8 +849,9 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 8,
     marginLeft: 5,
-    alignItems: 'center',
-    marginTop: 15
+    marginTop: 15,
+    justifyContent:'center',
+    alignItems:'center',
   },
   container: {
     flex: 1,

@@ -16,7 +16,7 @@ import GroupExpanceCard from './ExpanceCard'
 
 const GroupExpanseScreen = (props) => {
   // console.log("propes", props)
-  const { id, place, countery } = props.route.params;
+  const { id, title} = props.route.params;
   const navigation = useNavigation()
   const [expenses, setExpenses] = useState([])
   const [total, setTotal] = useState(0);
@@ -71,8 +71,8 @@ const GroupExpanseScreen = (props) => {
             <Ionicons name='arrow-back-outline' size={25} color='black' />
           </TouchableOpacity>
           <View>
-            <Text style={{ fontSize: 15, fontWeight: '700' }}>{place}</Text>
-            <Text style={{ fontSize: 12, fontWeight: '500', opacity: 0.6 }}>{countery}</Text>
+            <Text style={{ fontSize: 15, fontWeight: '700' }}>Group Name : {title}</Text>
+            {/* <Text style={{ fontSize: 12, fontWeight: '500', opacity: 0.6 }}>{title}</Text> */}
           </View>
         </View>
         <View style={{ justifyContent: 'center', alignItems: 'center', marginBottom: 5 }}>
