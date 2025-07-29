@@ -50,7 +50,7 @@ const AddGroupScreen = () => {
                 <BannerAds/>
                 <View style={{ marginHorizontal: 20 }}>
                     <Text style={{ padding: 5, fontSize: 16, marginTop: 20 }}>Group title</Text>
-                    <TextInput value={title} onChangeText={value => setTitle(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Entergroup title here ...' />
+                    <TextInput value={title} placeholderTextColor='gray' onChangeText={value => setTitle(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Entergroup title here ...' />
                 </View>
                 {
                     loading ? (

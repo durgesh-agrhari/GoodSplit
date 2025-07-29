@@ -359,12 +359,14 @@ const togglePaidStatus = async (memberId, isPaid) => {
                 value={memberName}
                 onChangeText={setMemberName}
                 style={styles.input}
+                placeholderTextColor='gray'
               />
               <TextInput
                 placeholder="Member Title (optional)"
                 value={memberTitle}
                 onChangeText={setMemberTitle}
                 style={styles.input}
+                placeholderTextColor='gray'
               />
               <View style={styles.modalButtonContainer}>
                 <TouchableOpacity onPress={handleAddMember} style={styles.modalButtonAdd}>
