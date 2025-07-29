@@ -25,6 +25,7 @@ const analytics = getAnalytics(app);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 
+
 export const tripsRef = collection(db, 'trips');
 export const expensesRef = collection(db, 'expenses');
 export const feedbackRef = collection(db, 'feedbacks');

@@ -22,33 +22,33 @@ const SigninScreen = () => {
 
   const { login, userLoading } = useAuth();
 
-//   const handleSubmit = async () => {
-//     if (!email || !password) {
-//       Alert.alert('Email and password is required');
-//       return;
-//     }
+  //   const handleSubmit = async () => {
+  //     if (!email || !password) {
+  //       Alert.alert('Email and password is required');
+  //       return;
+  //     }
 
-//     const result = await login(email, password);
-//     if (result.success) {
-//       navigation.navigate('BottomTab');
-//     } else {
-//       Alert.alert('Login Failed', result.message || 'Wrong Email or Password');
-//     }
-//   };
+  //     const result = await login(email, password);
+  //     if (result.success) {
+  //       navigation.navigate('BottomTab');
+  //     } else {
+  //       Alert.alert('Login Failed', result.message || 'Wrong Email or Password');
+  //     }
+  //   };
 
-const handleSubmit = async () => {
-  if (!email || !password) {
-    Alert.alert('Email and password is required');
-    return;
-  }
+  const handleSubmit = async () => {
+    if (!email || !password) {
+      Alert.alert('Email and password is required');
+      return;
+    }
 
-  const result = await login(email, password);
-  if (!result.success) {
-    Alert.alert('Login Failed', result.message || 'Wrong Email or Password');
-  }
+    const result = await login(email, password);
+    if (!result.success) {
+      Alert.alert('Login Failed', result.message || 'Wrong Email or Password');
+    }
 
-  // ❌ DO NOT navigate manually — let AppNavigator re-render automatically
-};
+    // ❌ DO NOT navigate manually — let AppNavigator re-render automatically
+  };
 
 
   return (
@@ -87,9 +87,13 @@ const handleSubmit = async () => {
             placeholder="Enter here ..."
           />
 
-          <TouchableOpacity>
+          {/* <TouchableOpacity>
             <Text style={styles.forgot}>Forget password ?</Text>
+          </TouchableOpacity> */}
+          <TouchableOpacity onPress={() => navigation.navigate('ForgetPassword')}>
+            <Text style={styles.forgot}>Forget password?</Text>
           </TouchableOpacity>
+
         </View>
 
         {userLoading ? (
