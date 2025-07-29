@@ -16,7 +16,7 @@ import GroupExpanceCard from './ExpanceCard'
 
 const GroupExpanseScreen = (props) => {
   // console.log("propes", props)
-  const { id, title} = props.route.params;
+  const { id, title, place} = props.route.params;
   const navigation = useNavigation()
   const [expenses, setExpenses] = useState([])
   const [total, setTotal] = useState(0);
@@ -105,7 +105,7 @@ const GroupExpanseScreen = (props) => {
 
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10, marginTop: 20, paddingBottom: 10 }}>
           <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Group Expenses</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('AddGroupExpenseScreen', { id, place, countery })} style={{ backgroundColor: '#dcdde1ff', borderRadius: 15, padding: 5, paddingLeft: 15, paddingRight: 15 }}>
+          <TouchableOpacity onPress={() => navigation.navigate('AddGroupExpenseScreen', { id, title })} style={{ backgroundColor: '#dcdde1ff', borderRadius: 15, padding: 5, paddingLeft: 15, paddingRight: 15 }}>
             <Text>Add Expanse</Text>
           </TouchableOpacity>
         </View>

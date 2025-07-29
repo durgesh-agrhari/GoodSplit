@@ -54,9 +54,9 @@ const AddExpenseScreen = (propes) => {
                 <BannerAds/>
                 <View style={{ marginHorizontal: 20 }}>
                     <Text style={{ padding: 5, fontSize: 16, marginTop: 20 }}>For What ?</Text>
-                    <TextInput value={title} onChangeText={value => setTitle(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Enter here ...' />
+                    <TextInput placeholderTextColor='gray'  value={title} onChangeText={value => setTitle(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Enter here ...' />
                     <Text style={{ padding: 5, fontSize: 16, marginTop: 20 }} >How Much ?</Text>
-                    <TextInput value={amount} onChangeText={value => setAmount(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Enter here ...' />
+                    <TextInput  value={amount} placeholderTextColor='gray'  onChangeText={value => setAmount(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Enter here ...' />
                 </View>
                 <View style={{ marginHorizontal: 20 }}>
                     <Text style={{ padding: 5, fontSize: 16, marginTop: 20 }} >Category</Text>

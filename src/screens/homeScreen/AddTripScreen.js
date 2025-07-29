@@ -51,10 +51,10 @@ const AddTripScreen = () => {
                 </View>
                 <BannerAds/>
                 <View style={{ marginHorizontal: 20 }}>
-                    <Text style={{ padding: 5, fontSize: 16, marginTop: 20 }}>Where on Earth</Text>
-                    <TextInput value={place} onChangeText={value => setPlace(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Enter here ...' />
-                    <Text style={{ padding: 5, fontSize: 16, marginTop: 20 }} >Which cuntery</Text>
-                    <TextInput value={countery} onChangeText={value => setCountery(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Enter here ...' />
+                    <Text style={{ padding: 5, fontSize: 16, marginTop: 20 }}>Trip title</Text>
+                    <TextInput value={place} placeholderTextColor='gray' onChangeText={value => setPlace(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Enter your title here ...' />
+                    <Text style={{ padding: 5, fontSize: 16, marginTop: 20 }} >Trip Place name</Text>
+                    <TextInput value={countery} placeholderTextColor='gray'  onChangeText={value => setCountery(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Enter your place name here ...' />
 
                 </View>
                 {
