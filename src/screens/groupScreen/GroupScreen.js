@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   Animated,
   Dimensions,
@@ -24,6 +25,7 @@ import { useAuth } from '../../context/AuthContext';
 import BannerAds from '../adManager/BannerAds';
 import EmpityList from '../homeScreen/EmpityList';
 import { MemberRef } from '../../config/firebse';
+import Loading from '../../components/Loading';
 
 const { width } = Dimensions.get('window');
 const ITEM_WIDTH = width * 0.85;
@@ -55,6 +57,7 @@ const GroupScreen = () => {
   const [showMemberPopup, setShowMemberPopup] = useState(false);
   const [selectedGroupId, setSelectedGroupId] = useState(null);
   const [memberCounts, setMemberCounts] = useState({});
+  const [loading, setLoading] = useState(false)
 
   const [splitAmount, setSplitAmount] = useState('');
   const [memberShares, setMemberShares] = useState([]);
@@ -63,45 +66,45 @@ const GroupScreen = () => {
 
   const [paidStatus, setPaidStatus] = useState({});
 
-//   const togglePaidStatus = async (memberId, groupId, isPaid) => {
-//   try {
-//     // Update in Firestore
-//     const memberDocRef = doc(MemberRef, 'members', memberId);
-//     await updateDoc(memberDocRef, {
-//       paid: !isPaid,
-//     });
+  //   const togglePaidStatus = async (memberId, groupId, isPaid) => {
+  //   try {
+  //     // Update in Firestore
+  //     const memberDocRef = doc(MemberRef, 'members', memberId);
+  //     await updateDoc(memberDocRef, {
+  //       paid: !isPaid,
+  //     });
 
-//     // Update in local state
-//     setMembers((prevMembers) =>
-//       prevMembers.map((member) =>
-//         member.id === memberId ? { ...member, paid: !isPaid } : member
-//       )
-//     );
-//   } catch (error) {
-//     console.error('Error updating paid status:', error);
-//   }
-// };
+  //     // Update in local state
+  //     setMembers((prevMembers) =>
+  //       prevMembers.map((member) =>
+  //         member.id === memberId ? { ...member, paid: !isPaid } : member
+  //       )
+  //     );
+  //   } catch (error) {
+  //     console.error('Error updating paid status:', error);
+  //   }
+  // };
 
-const togglePaidStatus = async (memberId, isPaid) => {
-  try {
-    // Correct document reference
-    const memberDocRef = doc(MemberRef, memberId);
+  const togglePaidStatus = async (memberId, isPaid) => {
+    try {
+      // Correct document reference
+      const memberDocRef = doc(MemberRef, memberId);
 
-    // Update the 'paid' field in Firestore
-    await updateDoc(memberDocRef, {
-      paid: !isPaid,
-    });
+      // Update the 'paid' field in Firestore
+      await updateDoc(memberDocRef, {
+        paid: !isPaid,
+      });
 
-    // Update local state
-    setMembers((prevMembers) =>
-      prevMembers.map((member) =>
-        member.id === memberId ? { ...member, paid: !isPaid } : member
-      )
-    );
-  } catch (error) {
-    console.error('Error updating paid status:', error);
-  }
-};
+      // Update local state
+      setMembers((prevMembers) =>
+        prevMembers.map((member) =>
+          member.id === memberId ? { ...member, paid: !isPaid } : member
+        )
+      );
+    } catch (error) {
+      console.error('Error updating paid status:', error);
+    }
+  };
 
 
 
@@ -147,6 +150,7 @@ const togglePaidStatus = async (memberId, isPaid) => {
       return;
     }
     try {
+      setLoading(true)
       await addDoc(MemberRef, {
         name: memberName,
         title: memberTitle,
@@ -154,6 +158,7 @@ const togglePaidStatus = async (memberId, isPaid) => {
         createdAt: new Date(),
       });
       await fetchMembers(selectedGroupId);
+      setLoading(false)
       Alert.alert('✅ Member Added', `${memberName} (${memberTitle})`);
       closeModal();
     } catch (error) {
@@ -217,9 +222,48 @@ const togglePaidStatus = async (memberId, isPaid) => {
   //   setTotalSpent(grandTotal);
   // };
 
+  // const fetchTrip = async () => {
+  //   const q = query(groupRef, where("userId", "==", userData.uid));
+  //   const querySnapshot = await getDocs(q);
+  //   let grandTotal = 0;
+  //   let totals = {};
+  //   let tripData = [];
+  //   let counts = {};
+
+  //   for (const doc of querySnapshot.docs) {
+  //     const trip = { ...doc.data(), id: doc.id };
+  //     tripData.push(trip);
+
+  //     // Get expenses
+  //     const expenseQuery = query(GroupExpenseRef, where("groupExpenseId", "==", trip.id));
+  //     const expenseSnapshot = await getDocs(expenseQuery);
+
+  //     let total = 0;
+  //     expenseSnapshot.forEach(exp => {
+  //       const amount = parseFloat(exp.data().amount?.toString().replace(/[^0-9.]/g, '')) || 0;
+  //       total += amount;
+  //     });
+
+  //     totals[trip.id] = total;
+  //     grandTotal += total;
+
+  //     // ✅ Fetch member count per trip
+  //     const count = await fetchMembers(trip.id);
+  //     counts[trip.id] = count;
+  //   }
+
+  //   setTrips(tripData);
+  //   setTripTotals(totals);
+  //   setTotalSpent(grandTotal);
+  //   setMemberCounts(counts); // ✅ set counts
+  // };
+
   const fetchTrip = async () => {
+  setLoading(true); // Start loading
+  try {
     const q = query(groupRef, where("userId", "==", userData.uid));
     const querySnapshot = await getDocs(q);
+
     let grandTotal = 0;
     let totals = {};
     let tripData = [];
@@ -242,7 +286,7 @@ const togglePaidStatus = async (memberId, isPaid) => {
       totals[trip.id] = total;
       grandTotal += total;
 
-      // ✅ Fetch member count per trip
+      // Fetch member count
       const count = await fetchMembers(trip.id);
       counts[trip.id] = count;
     }
@@ -250,8 +294,14 @@ const togglePaidStatus = async (memberId, isPaid) => {
     setTrips(tripData);
     setTripTotals(totals);
     setTotalSpent(grandTotal);
-    setMemberCounts(counts); // ✅ set counts
-  };
+    setMemberCounts(counts);
+  } catch (error) {
+    console.error("Failed to fetch trip data:", error);
+  } finally {
+    setLoading(false); // End loading regardless of success or failure
+  }
+};
+
 
 
   useEffect(() => {
@@ -369,9 +419,16 @@ const togglePaidStatus = async (memberId, isPaid) => {
                 placeholderTextColor='gray'
               />
               <View style={styles.modalButtonContainer}>
-                <TouchableOpacity onPress={handleAddMember} style={styles.modalButtonAdd}>
-                  <Text style={{ color: '#fff' }}>Add</Text>
-                </TouchableOpacity>
+                {
+                  loading ? (
+                    <Loading />
+                  ) :
+                    (
+                      <TouchableOpacity onPress={handleAddMember} style={styles.modalButtonAdd}>
+                        <Text style={{ color: '#fff' }}>Add</Text>
+                      </TouchableOpacity>
+                    )
+                }
                 <TouchableOpacity onPress={closeModal} style={styles.modalButtonCancel}>
                   <Text style={{ color: '#000' }}>Cancel</Text>
                 </TouchableOpacity>
@@ -490,103 +547,104 @@ const togglePaidStatus = async (memberId, isPaid) => {
       )} */}
 
       {showMemberPopup && (
-  <Modal
-    transparent
-    animationType="slide"
-    visible={showMemberPopup}
-    onRequestClose={() => setShowMemberPopup(false)}
-  >
-    <View style={styles.modalOverlay}>
-      <View style={styles.modalContainer}>
-        <Text style={styles.modalTitle}>Group Members</Text>
-
-        <View
-          style={{
-            marginHorizontal: 10,
-            marginTop: 10,
-            alignItems: 'center',
-            backgroundColor: '#cef0d7',
-            padding: 5,
-            borderRadius: 10,
-            marginBottom: 15,
-          }}
+        <Modal
+          transparent
+          animationType="slide"
+          visible={showMemberPopup}
+          onRequestClose={() => setShowMemberPopup(false)}
         >
-          <Text style={{ fontSize: 18, fontWeight: '600', color: '#2f3640' }}>
-            Total Spent: ₹{tripTotals[selectedGroupId]?.toFixed(2) || '0.00'}
-          </Text>
-          <Text style={{ fontSize: 16, color: '#2f3640' }}>
-            Each Member Pays: ₹
-            {(members.length > 0 && tripTotals[selectedGroupId]
-              ? (tripTotals[selectedGroupId] / members.length).toFixed(2)
-              : 0)}
-          </Text>
-        </View>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>Group Members</Text>
 
-        {members.length === 0 ? (
-          <Text style={{ textAlign: 'center', marginTop: 20, marginBottom: 20 }}>
-            No members added yet.
-          </Text>
-        ) : (
-          members.map((m, index) => (
-            <View
-              key={m.id}
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                marginVertical: 5,
-                alignItems: 'center',
-              }}
-            >
-              <View>
-                <Text
-                  style={{
-                    textDecorationLine: m.paid ? 'line-through' : 'none',
-                    color: m.paid ? 'green' : 'red',
-                  }}
-                >
-                  {index + 1}. {m.name} ({m.title})
+              <View
+                style={{
+                  marginHorizontal: 10,
+                  marginTop: 10,
+                  alignItems: 'center',
+                  backgroundColor: '#cef0d7',
+                  padding: 5,
+                  borderRadius: 10,
+                  marginBottom: 15,
+                }}
+              >
+                <Text style={{ fontSize: 18, fontWeight: '600', color: '#2f3640' }}>
+                  Total Spent: ₹{tripTotals[selectedGroupId]?.toFixed(2) || '0.00'}
                 </Text>
-                <Text style={{ color: 'gray' }}>
-                  Owes: ₹
+                <Text style={{ fontSize: 16, color: '#2f3640' }}>
+                  Each Member Pays: ₹
                   {(members.length > 0 && tripTotals[selectedGroupId]
                     ? (tripTotals[selectedGroupId] / members.length).toFixed(2)
                     : 0)}
                 </Text>
               </View>
 
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <TouchableOpacity
-                  onPress={() => togglePaidStatus(m.id)}
-                  style={{
-                    padding: 5,
-                    backgroundColor: m.paid ? '#d4edda' : '#f8d7da',
-                    borderRadius: 5,
-                    marginRight: 10,
-                  }}
-                >
-                  <Text style={{ color: m.paid ? 'green' : 'red' }}>
-                    {m.paid ? 'Paid' : 'Unpaid'}
-                  </Text>
-                </TouchableOpacity>
+              {members.length === 0 ? (
+                <Text style={{ textAlign: 'center', marginTop: 20, marginBottom: 20 }}>
+                  No members added yet.
+                </Text>
+              ) : (
+                members.map((m, index) => (
+                  <View
+                    key={m.id}
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      marginVertical: 5,
+                      alignItems: 'center',
+                    }}
+                  >
+                    <View>
+                      <Text
+                        style={{
+                          textDecorationLine: m.paid ? 'line-through' : 'none',
+                          color: m.paid ? 'green' : 'red',
+                          width:200,
+                        }}
+                      >
+                        {index + 1}. {m.name} ({m.title})
+                      </Text>
+                      <Text style={{ color: 'gray' }}>
+                        Owes: ₹
+                        {(members.length > 0 && tripTotals[selectedGroupId]
+                          ? (tripTotals[selectedGroupId] / members.length).toFixed(2)
+                          : 0)}
+                      </Text>
+                    </View>
 
-                <TouchableOpacity onPress={() => deleteMember(m.id)}>
-                  <MaterialIcons name="delete-outline" size={20} color="red" />
-                </TouchableOpacity>
-              </View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <TouchableOpacity
+                        onPress={() => togglePaidStatus(m.id)}
+                        style={{
+                          padding: 5,
+                          backgroundColor: m.paid ? '#d4edda' : '#f8d7da',
+                          borderRadius: 5,
+                          marginRight: 10,
+                        }}
+                      >
+                        <Text style={{ color: m.paid ? 'green' : 'red' }}>
+                          {m.paid ? 'Paid' : 'Unpaid'}
+                        </Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity onPress={() => deleteMember(m.id)}>
+                        <MaterialIcons name="delete-outline" size={20} color="red" />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ))
+              )}
+
+              <TouchableOpacity
+                onPress={() => setShowMemberPopup(false)}
+                style={[styles.modalButtonCancel, { marginTop: 15 }]}
+              >
+                <Text style={{ color: 'green', textAlign: 'center' }}>Close</Text>
+              </TouchableOpacity>
             </View>
-          ))
-        )}
-
-        <TouchableOpacity
-          onPress={() => setShowMemberPopup(false)}
-          style={[styles.modalButtonCancel, { marginTop: 15 }]}
-        >
-          <Text style={{ color: 'green', textAlign: 'center' }}>Close</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  </Modal>
-)}
+          </View>
+        </Modal>
+      )}
 
 
       {/* Header */}
@@ -659,12 +717,125 @@ const togglePaidStatus = async (memberId, isPaid) => {
         </TouchableOpacity>
       </View>
 
-      <FlatList
+      {/* <FlatList
         data={trips}
         ListEmptyComponent={EmpityList()}
         keyExtractor={items => items.id}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => navigation.navigate('GroupExpanseScreen', { ...item })} style={{ backgroundColor: '#f2f3f5', borderRadius: 10, margin: 10, marginTop: 15, padding: 15 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                <View style={{ marginTop: -60, marginLeft: -5 }}>
+                  <TouchableOpacity onPress={() => handleDeleteTrip(item.id)} style={{ padding: 6, backgroundColor: '#d6d0d0', borderRadius: 50 }}>
+                    <MaterialIcons name="delete-outline" size={20} color='#d65e60' />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setGroupToDelete(item.id);
+                      setShowDeleteConfirm(true);
+                    }}
+                    style={{ padding: 6, backgroundColor: '#d6d0d0', borderRadius: 50, marginLeft: -15 }}
+                  >
+                    <MaterialIcons name="delete-outline" size={24} color="red" />
+                  </TouchableOpacity>
+
+                </View>
+                <Image source={randemImage()} style={{ width: 40, height: 40, borderRadius: 10, marginLeft: -30 }} />
+                <View>
+                  <Text style={{ fontWeight: '800', marginLeft: 10 }}>{item.title}</Text>
+                  <Text style={{ fontWeight: '600', color: 'green', fontSize: 12, marginLeft: 10 }}>Group Spend</Text>
+                  <Text style={{ fontWeight: '600', color: "#db4649", marginLeft: 10 }}>₹ {tripTotals[item.id]?.toFixed(2) || 0}</Text>
+                </View>
+              </View>
+
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 8 }}>
+                <View style={{ marginRight: 1, alignItems: 'flex-end' }}>
+                  <Text style={{ fontWeight: '600', color: 'green', fontSize: 12 }}>you are owed</Text>
+                  <Text style={{ fontWeight: '600', color: "red" }}>₹ {tripTotals[item.id]?.toFixed(2) || 0}</Text>
+                </View>
+
+                <View style={{ marginLeft: 5 }}>
+
+                  <TouchableOpacity
+                    onPress={() => {
+                      setSelectedGroupId(item.id);
+                      setIsAddMemberModalVisible(true);
+                    }}
+                    style={{ padding: 6, backgroundColor: 'gray', borderRadius: 50, flexDirection: 'row' }}
+                  >
+                    <View style={styles.container}>
+                      <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEvkMZtGOAhpFvkJeuC-pRRrFFaQ9nL0NRTqoBAhLgzGxBwM-29_a4s5R0WwfDIg-1BOk&usqp=CAU' }} style={[styles.circle, { backgroundColor: '#00FFFF', left: -40 }]} />
+                      <Image source={{ uri: 'https://static.vecteezy.com/system/resources/thumbnails/002/002/257/small_2x/beautiful-woman-avatar-character-icon-free-vector.jpg' }} style={[styles.circle, { backgroundColor: '#0000FF', left: -20 }]} />
+                      <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6W8j59cb5rvLX_rYPVcqZ67MVfShKc87w1IafvcFi0_7ytM4mGshNvIZjJFC5RMiEfqw&usqp=CAU' }} style={[styles.circle, { backgroundColor: '#800080', left: 0 }]} />
+                      <Image source={{ uri: 'https://img.freepik.com/premium-vector/avatar-portrait-young-caucasian-woman-round-frame-vector-cartoon-flat-illustration_551425-22.jpg' }} style={[styles.circle, { backgroundColor: '#FF00FF', left: 20 }]} />
+                      <Image source={{ uri: 'https://img.freepik.com/premium-vector/young-man-avatar-character-due-avatar-man-vector-icon-cartoon-illustration_1186924-4438.jpg?semt=ais_items_boosted&w=740' }} style={[styles.circle, { backgroundColor: '#FFC0CB', left: 40 }]} />
+                    </View>
+                    <View style={{ backgroundColor: 'gray', borderRadius: 50, padding: 4, marginLeft: 10 }}>
+                      <Feather name="plus-circle" size={20} color='#f0e8e8ff' />
+                    </View>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => {
+                      setSelectedGroupId(item.id);
+                      setIsAddMemberModalVisible(true);
+                    }}
+                  >
+                    <Text style={{ fontSize: 12, marginLeft: 8, marginTop: 3 }}>Add Member</Text>
+                  </TouchableOpacity>
+
+                </View>
+
+                <View style={{ marginLeft: 15, marginRight: -20 }}>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('GroupExpanseScreen', { ...item })}
+                    style={{ backgroundColor: '#c4c0c0', padding: 7, borderRadius: 10, paddingLeft: 10, paddingRight: 10, margin: 5 }}
+                  >
+                    <Text style={{ fontSize: 12 }}>Add Expences +</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={async () => {
+                      setSelectedGroupId(item.id);
+                      await fetchMembers(item.id);
+                      setShowMemberPopup(true);
+                    }}
+                    style={{ backgroundColor: '#c4c0c0', padding: 7, borderRadius: 10, paddingLeft: 10, paddingRight: 10, margin: 5 }}
+
+                  >
+                    <Text style={{ fontSize: 12 }}>{memberCounts[item.id] || 0} Member Details </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </TouchableOpacity>
+        )}
+      /> */}
+
+
+      {loading ? (
+  <View style={{ alignItems: 'center', marginTop: 30 }}>
+    <TouchableOpacity
+      style={{
+        backgroundColor: '#4ebf5a',
+        paddingVertical: 15,
+        paddingHorizontal: 25,
+        borderRadius: 10,
+      }}
+      disabled
+    >
+      <ActivityIndicator size='large' color='white' />
+      <Text style={{ color: 'white', fontWeight: 'bold' , marginTop:10}}>Loading...</Text>
+    </TouchableOpacity>
+  </View>
+) : trips.length === 0 ? (
+  <EmpityList />
+) : (
+  <FlatList
+    data={trips}
+    keyExtractor={items => items.id}
+    showsVerticalScrollIndicator={false}
+    renderItem={({ item }) => (
           <TouchableOpacity onPress={() => navigation.navigate('GroupExpanseScreen', { ...item })} style={{ backgroundColor: '#f2f3f5', borderRadius: 10, margin: 10, marginTop: 15, padding: 15 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
@@ -685,7 +856,7 @@ const togglePaidStatus = async (memberId, isPaid) => {
                 </View>
                 <Image source={randemImage()} style={{ width: 40, height: 40, borderRadius: 10, marginLeft: -30 }} />
                 <View>
-                  <Text style={{ fontWeight: '800', marginLeft: 10 }}>{item.title}</Text>
+                  <Text style={{ fontWeight: '800', marginLeft: 10,width:90 }}>{item.title}</Text>
                   <Text style={{ fontWeight: '600', color: 'green', fontSize: 12, marginLeft: 10 }}>Group Spend</Text>
                   <Text style={{ fontWeight: '600', color: "#db4649", marginLeft: 10 }}>₹ {tripTotals[item.id]?.toFixed(2) || 0}</Text>
                 </View>
@@ -751,8 +922,10 @@ const togglePaidStatus = async (memberId, isPaid) => {
               </View>
             </View>
           </TouchableOpacity>
-        )}
-      />
+    )}
+  />
+)}
+
     </SafeAreaView>
   );
 };
@@ -852,8 +1025,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginLeft: 5,
     marginTop: 15,
-    justifyContent:'center',
-    alignItems:'center',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   container: {
     flex: 1,

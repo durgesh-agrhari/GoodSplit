@@ -12,8 +12,8 @@ export const categories = [
         value : 'dinner'
     },
     {
-        title : 'Food',
-        value : 'food'
+        title : 'Cake',
+        value : 'cake'
     },
     {
         title : 'Shopping',

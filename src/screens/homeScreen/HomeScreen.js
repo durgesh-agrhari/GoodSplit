@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   Animated,
   Dimensions,
@@ -57,6 +58,8 @@ const HomeScreen = () => {
   const isFocused = useIsFocused()
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [groupToDelete, setGroupToDelete] = useState(null);
+  const [loading, setLoading] = useState(false);
+
 
 
   // const fetchTrip = async () => {
@@ -70,18 +73,49 @@ const HomeScreen = () => {
   //   setTrips(data)
   // }
 
+  // const fetchTrip = async () => {
+  //   const q = query(tripsRef, where("userId", "==", userData.uid));
+  //   const querySnapshot = await getDocs(q);
+  //   let grandTotal = 0;
+  //   let totals = {}; // ✅ Initialize totals as an empty object
+  //   let tripData = [];
+
+  //   for (const doc of querySnapshot.docs) {
+  //     const trip = { ...doc.data(), id: doc.id };
+  //     tripData.push(trip);
+
+  //     // Fetch expenses for this trip
+  //     const expenseQuery = query(expensesRef, where("tripId", "==", trip.id));
+  //     const expenseSnapshot = await getDocs(expenseQuery);
+
+  //     let total = 0;
+  //     expenseSnapshot.forEach(exp => {
+  //       const amount = parseFloat(exp.data().amount?.toString().replace(/[^0-9.]/g, '')) || 0;
+  //       total += amount;
+  //     });
+
+  //     totals[trip.id] = total; // ✅ No more error here
+  //     grandTotal += total;
+  //   }
+
+  //   setTrips(tripData);
+  //   setTripTotals(totals);
+  //   setTotalSpent(grandTotal);
+
+  // };
   const fetchTrip = async () => {
+  setLoading(true);
+  try {
     const q = query(tripsRef, where("userId", "==", userData.uid));
     const querySnapshot = await getDocs(q);
     let grandTotal = 0;
-    let totals = {}; // ✅ Initialize totals as an empty object
+    let totals = {};
     let tripData = [];
 
     for (const doc of querySnapshot.docs) {
       const trip = { ...doc.data(), id: doc.id };
       tripData.push(trip);
 
-      // Fetch expenses for this trip
       const expenseQuery = query(expensesRef, where("tripId", "==", trip.id));
       const expenseSnapshot = await getDocs(expenseQuery);
 
@@ -91,15 +125,19 @@ const HomeScreen = () => {
         total += amount;
       });
 
-      totals[trip.id] = total; // ✅ No more error here
+      totals[trip.id] = total;
       grandTotal += total;
     }
 
     setTrips(tripData);
     setTripTotals(totals);
     setTotalSpent(grandTotal);
+  } catch (err) {
+    console.error("Error fetching trips:", err);
+  }
+  setLoading(false);
+};
 
-  };
 
   // console.log("data trips", trips)
   useEffect(() => {
@@ -279,7 +317,7 @@ const HomeScreen = () => {
         </TouchableOpacity>
       </View>
       <ScrollView showsVerticalScrollIndicator={false} style={{ paddingTop: 10, paddingBottom: 20 }}>
-        <FlatList
+        {/* <FlatList
           data={trips}
           // numColumns={2}
           ListEmptyComponent={EmpityList()}
@@ -297,6 +335,79 @@ const HomeScreen = () => {
                     <View>
                       <Text style={{ fontWeight: '800', marginLeft: 10 }}>{item.place}</Text>
                       <Text style={{ marginLeft: 10, marginBottom: 10 }}>{item.countery}</Text>
+                    </View>
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 8 }}>
+                    <View style={{ marginRight: 1, alignItems: 'flex-end' }}>
+                      <Text style={{ fontWeight: '600', color: 'green', fontSize: 12 }}>Total Spend</Text>
+                      <Text style={{ fontWeight: '600', color: "red" }}>₹ {tripTotals[item.id]?.toFixed(2) || 0}</Text>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => handleDeleteTrip(item.id)} // <-- Add this
+                      style={{
+                        marginLeft: 10,
+                        padding: 8,
+                        backgroundColor: 'gray',
+                        borderRadius: 50
+                      }}
+                    >
+                      <MaterialIcons name="delete-outline" size={20} color='white' />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setGroupToDelete(item.id);
+                        setShowDeleteConfirm(true);
+                      }}
+                       style={{
+                        marginLeft: 10,
+                        padding: 8,
+                        backgroundColor: '#dbdbd9',
+                        borderRadius: 50
+                      }}
+                    >
+                      <MaterialIcons name="delete-outline" size={24} color="red" />
+                    </TouchableOpacity>
+
+
+                  </View>
+
+                </View>
+              </TouchableOpacity>
+            )
+          }}
+        /> */}
+
+        {loading ? (
+  <View style={{ alignItems: 'center', marginTop: 20 }}>
+    <TouchableOpacity
+      style={{
+        backgroundColor: '#4ebf5a',
+        paddingVertical: 15,
+        paddingHorizontal: 20,
+        borderRadius: 8,
+      }}
+      disabled={true}
+    >
+      <ActivityIndicator size='large' color='white' />
+      <Text style={{ color: 'white', fontWeight: 'bold', marginTop:10}}>Loading...</Text>
+    </TouchableOpacity>
+  </View>
+) : trips.length === 0 ? (
+  <EmpityList />
+) : (
+  <FlatList
+    data={trips}
+    keyExtractor={items => items.id}
+    showsVerticalScrollIndicator={false}
+    renderItem={({ item }) => {
+      return (
+         <TouchableOpacity onPress={() => navigation.navigate('ExpenseScreen', { ...item })} style={{ backgroundColor: '#f2f3f5', borderRadius: 10, margin: 6 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                    <Image source={randemImage()} style={{ width: 80, height: 80, borderRadius: 10 }} />
+                    <View>
+                      <Text style={{ fontWeight: '800', marginLeft: 10, width:160 }}>{item.place}</Text>
+                      <Text style={{ marginLeft: 10, marginBottom: 10,width:160 }}>{item.countery}</Text>
                     </View>
                   </View>
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 8 }}>
@@ -335,9 +446,11 @@ const HomeScreen = () => {
 
                 </View>
               </TouchableOpacity>
-            )
-          }}
-        />
+      );
+    }}
+  />
+)}
+
       </ScrollView>
 
     </SafeAreaView>
