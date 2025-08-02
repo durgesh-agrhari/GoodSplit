@@ -27,6 +27,7 @@ import GroupExpanseScreen from '../screens/groupScreen/GroupExpanseScreen';
 import AddGroupExpenseScreen from '../screens/groupScreen/AddGroupExpenseScreen';
 import GroupExpanceCard from '../screens/groupScreen/ExpanceCard';
 import ForgetPassword from '../screens/authScreen/forgetPassword/ForgetPassword';
+import AllUsers from '../screens/profileScreen/Allusers';
 
 const Stack = createNativeStackNavigator();
 
@@ -80,6 +81,7 @@ const AppNavigator = () => {
           <Stack.Screen name="AddGroupExpenseScreen" component={AddGroupExpenseScreen} />
           <Stack.Screen name="PrivacyPolicyScreen" component={PrivacyPolicyScreen} />
           <Stack.Screen name="FeedbackScreen" component={FeedbackScreen} />
+          <Stack.Screen name="AllUsers" component={AllUsers} />
         </Stack.Navigator>
       ) : (
         <Stack.Navigator initialRouteName="Splacehomeblogin" screenOptions={{ headerShown: false }}>

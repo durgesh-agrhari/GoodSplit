@@ -653,6 +653,11 @@ const GroupScreen = () => {
           <Image source={require('../../assets/logo/logo.png')} style={styles.avatar} />
           <Text style={styles.title}>GoodSplit</Text>
         </View>
+        <View>
+          <TouchableOpacity onPress={()=> navigation.navigate('AllUsers')}>
+            <Text style={{color:'green'}}>All Users</Text>
+          </TouchableOpacity>
+        </View>
 
       </View>
 
