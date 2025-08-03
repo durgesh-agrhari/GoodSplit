@@ -3,6 +3,7 @@ import {
   Alert,
   Image,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -53,7 +54,7 @@ const SigninScreen = () => {
 
   return (
     <SafeAreaView style={{ marginTop: 20 }}>
-      <View>
+      <ScrollView>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back-outline" size={25} color="black" />
@@ -103,7 +104,7 @@ const SigninScreen = () => {
             <Text style={styles.loginText}>Login</Text>
           </TouchableOpacity>
         )}
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

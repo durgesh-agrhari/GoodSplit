@@ -1,4 +1,4 @@
-import { Alert, Image, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { useNavigation } from '@react-navigation/native'
@@ -97,7 +97,7 @@ const SignupScreen = () => {
 
     return (
         <SafeAreaView style={{ marginTop: 20 }}>
-            <View>
+            <ScrollView>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10 }}>
                     <TouchableOpacity onPress={() => navigation.goBack()}>
                         <Ionicons name='arrow-back-outline' size={25} color='black' />
@@ -148,7 +148,7 @@ const SignupScreen = () => {
                         </TouchableOpacity>
                     )
                 }
-            </View>
+            </ScrollView>
         </SafeAreaView>
     )
 }

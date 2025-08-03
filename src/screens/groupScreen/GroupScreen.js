@@ -259,48 +259,48 @@ const GroupScreen = () => {
   // };
 
   const fetchTrip = async () => {
-  setLoading(true); // Start loading
-  try {
-    const q = query(groupRef, where("userId", "==", userData.uid));
-    const querySnapshot = await getDocs(q);
+    setLoading(true); // Start loading
+    try {
+      const q = query(groupRef, where("userId", "==", userData.uid));
+      const querySnapshot = await getDocs(q);
 
-    let grandTotal = 0;
-    let totals = {};
-    let tripData = [];
-    let counts = {};
+      let grandTotal = 0;
+      let totals = {};
+      let tripData = [];
+      let counts = {};
 
-    for (const doc of querySnapshot.docs) {
-      const trip = { ...doc.data(), id: doc.id };
-      tripData.push(trip);
+      for (const doc of querySnapshot.docs) {
+        const trip = { ...doc.data(), id: doc.id };
+        tripData.push(trip);
 
-      // Get expenses
-      const expenseQuery = query(GroupExpenseRef, where("groupExpenseId", "==", trip.id));
-      const expenseSnapshot = await getDocs(expenseQuery);
+        // Get expenses
+        const expenseQuery = query(GroupExpenseRef, where("groupExpenseId", "==", trip.id));
+        const expenseSnapshot = await getDocs(expenseQuery);
 
-      let total = 0;
-      expenseSnapshot.forEach(exp => {
-        const amount = parseFloat(exp.data().amount?.toString().replace(/[^0-9.]/g, '')) || 0;
-        total += amount;
-      });
+        let total = 0;
+        expenseSnapshot.forEach(exp => {
+          const amount = parseFloat(exp.data().amount?.toString().replace(/[^0-9.]/g, '')) || 0;
+          total += amount;
+        });
 
-      totals[trip.id] = total;
-      grandTotal += total;
+        totals[trip.id] = total;
+        grandTotal += total;
 
-      // Fetch member count
-      const count = await fetchMembers(trip.id);
-      counts[trip.id] = count;
+        // Fetch member count
+        const count = await fetchMembers(trip.id);
+        counts[trip.id] = count;
+      }
+
+      setTrips(tripData);
+      setTripTotals(totals);
+      setTotalSpent(grandTotal);
+      setMemberCounts(counts);
+    } catch (error) {
+      console.error("Failed to fetch trip data:", error);
+    } finally {
+      setLoading(false); // End loading regardless of success or failure
     }
-
-    setTrips(tripData);
-    setTripTotals(totals);
-    setTotalSpent(grandTotal);
-    setMemberCounts(counts);
-  } catch (error) {
-    console.error("Failed to fetch trip data:", error);
-  } finally {
-    setLoading(false); // End loading regardless of success or failure
-  }
-};
+  };
 
 
 
@@ -599,7 +599,7 @@ const GroupScreen = () => {
                         style={{
                           textDecorationLine: m.paid ? 'line-through' : 'none',
                           color: m.paid ? 'green' : 'red',
-                          width:200,
+                          width: 200,
                         }}
                       >
                         {index + 1}. {m.name} ({m.title})
@@ -654,8 +654,8 @@ const GroupScreen = () => {
           <Text style={styles.title}>GoodSplit</Text>
         </View>
         <View>
-          <TouchableOpacity onPress={()=> navigation.navigate('AllUsers')}>
-            <Text style={{color:'green'}}>All Users</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('AllUsers')}>
+            <Text style={{ color: 'green' }}>All Users</Text>
           </TouchableOpacity>
         </View>
 
@@ -819,117 +819,110 @@ const GroupScreen = () => {
 
 
       {loading ? (
-  <View style={{ alignItems: 'center', marginTop: 30 }}>
-    <TouchableOpacity
-      style={{
-        backgroundColor: '#4ebf5a',
-        paddingVertical: 15,
-        paddingHorizontal: 25,
-        borderRadius: 10,
-      }}
-      disabled
-    >
-      <ActivityIndicator size='large' color='white' />
-      <Text style={{ color: 'white', fontWeight: 'bold' , marginTop:10}}>Loading...</Text>
-    </TouchableOpacity>
-  </View>
-) : trips.length === 0 ? (
-  <EmpityList />
-) : (
-  <FlatList
-    data={trips}
-    keyExtractor={items => items.id}
-    showsVerticalScrollIndicator={false}
-    renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => navigation.navigate('GroupExpanseScreen', { ...item })} style={{ backgroundColor: '#f2f3f5', borderRadius: 10, margin: 10, marginTop: 15, padding: 15 }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                <View style={{ marginTop: -60, marginLeft: -5 }}>
-                  {/* <TouchableOpacity onPress={() => handleDeleteTrip(item.id)} style={{ padding: 6, backgroundColor: '#d6d0d0', borderRadius: 50 }}>
-                    <MaterialIcons name="delete-outline" size={20} color='#d65e60' />
-                  </TouchableOpacity> */}
-                  <TouchableOpacity
-                    onPress={() => {
-                      setGroupToDelete(item.id);
-                      setShowDeleteConfirm(true);
-                    }}
-                    style={{ padding: 6, backgroundColor: '#d6d0d0', borderRadius: 50, marginLeft: -15 }}
-                  >
-                    <MaterialIcons name="delete-outline" size={24} color="red" />
-                  </TouchableOpacity>
-
-                </View>
-                <Image source={randemImage()} style={{ width: 40, height: 40, borderRadius: 10, marginLeft: -30 }} />
-                <View>
-                  <Text style={{ fontWeight: '800', marginLeft: 10,width:90 }}>{item.title}</Text>
-                  <Text style={{ fontWeight: '600', color: 'green', fontSize: 12, marginLeft: 10 }}>Group Spend</Text>
-                  <Text style={{ fontWeight: '600', color: "#db4649", marginLeft: 10 }}>₹ {tripTotals[item.id]?.toFixed(2) || 0}</Text>
-                </View>
-              </View>
-
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 8 }}>
-                {/* <View style={{ marginRight: 1, alignItems: 'flex-end' }}>
-                  <Text style={{ fontWeight: '600', color: 'green', fontSize: 12 }}>you are owed</Text>
-                  <Text style={{ fontWeight: '600', color: "red" }}>₹ {tripTotals[item.id]?.toFixed(2) || 0}</Text>
-                </View> */}
-
-                <View style={{ marginLeft: 5 }}>
-
-                  <TouchableOpacity
-                    onPress={() => {
-                      setSelectedGroupId(item.id);
-                      setIsAddMemberModalVisible(true);
-                    }}
-                    style={{ padding: 6, backgroundColor: 'gray', borderRadius: 50, flexDirection: 'row' }}
-                  >
-                    <View style={styles.container}>
-                      <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEvkMZtGOAhpFvkJeuC-pRRrFFaQ9nL0NRTqoBAhLgzGxBwM-29_a4s5R0WwfDIg-1BOk&usqp=CAU' }} style={[styles.circle, { backgroundColor: '#00FFFF', left: -40 }]} />
-                      <Image source={{ uri: 'https://static.vecteezy.com/system/resources/thumbnails/002/002/257/small_2x/beautiful-woman-avatar-character-icon-free-vector.jpg' }} style={[styles.circle, { backgroundColor: '#0000FF', left: -20 }]} />
-                      <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6W8j59cb5rvLX_rYPVcqZ67MVfShKc87w1IafvcFi0_7ytM4mGshNvIZjJFC5RMiEfqw&usqp=CAU' }} style={[styles.circle, { backgroundColor: '#800080', left: 0 }]} />
-                      {/* <Image source={{ uri: 'https://img.freepik.com/premium-vector/avatar-portrait-young-caucasian-woman-round-frame-vector-cartoon-flat-illustration_551425-22.jpg' }} style={[styles.circle, { backgroundColor: '#FF00FF', left: 20 }]} /> */}
-                      {/* <Image source={{ uri: 'https://img.freepik.com/premium-vector/young-man-avatar-character-due-avatar-man-vector-icon-cartoon-illustration_1186924-4438.jpg?semt=ais_items_boosted&w=740' }} style={[styles.circle, { backgroundColor: '#FFC0CB', left: 40 }]} /> */}
-                    </View>
-                    <View style={{ backgroundColor: 'gray', borderRadius: 50, padding: 4, marginLeft: 10 }}>
-                      <Feather name="plus-circle" size={20} color='#f0e8e8ff' />
-                    </View>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() => {
-                      setSelectedGroupId(item.id);
-                      setIsAddMemberModalVisible(true);
-                    }}
-                  >
-                    <Text style={{ fontSize: 12, marginLeft: 8, marginTop: 3 }}>Add Member</Text>
-                  </TouchableOpacity>
-
-                </View>
-
-                <View style={{ marginLeft: 15, marginRight: -20 }}>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate('GroupExpanseScreen', { ...item })}
-                    style={{ backgroundColor: '#c4c0c0', padding: 7, borderRadius: 10, paddingLeft: 10, paddingRight: 10, margin: 5 }}
-                  >
-                    <Text style={{ fontSize: 12 }}>Add Expences +</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={async () => {
-                      setSelectedGroupId(item.id);
-                      await fetchMembers(item.id);
-                      setShowMemberPopup(true);
-                    }}
-                    style={{ backgroundColor: '#c4c0c0', padding: 7, borderRadius: 10, paddingLeft: 10, paddingRight: 10, margin: 5 }}
-
-                  >
-                    <Text style={{ fontSize: 12 }}>{memberCounts[item.id] || 0} Member Details </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
+        <View style={{ alignItems: 'center', marginTop: 30 }}>
+          <TouchableOpacity
+            style={{
+              backgroundColor: '#4ebf5a',
+              paddingVertical: 15,
+              paddingHorizontal: 25,
+              borderRadius: 10,
+            }}
+            disabled
+          >
+            <ActivityIndicator size='large' color='white' />
+            <Text style={{ color: 'white', fontWeight: 'bold', marginTop: 10 }}>Loading...</Text>
           </TouchableOpacity>
-    )}
-  />
-)}
+        </View>
+      ) : trips.length === 0 ? (
+        <EmpityList />
+      ) : (
+        <FlatList
+          data={trips}
+          keyExtractor={items => items.id}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => navigation.navigate('GroupExpanseScreen', { ...item })} style={{ backgroundColor: '#f2f3f5', borderRadius: 10, margin: 10, marginTop: 15, padding: 15, flex:1 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                  <View style={{ marginTop: -60, marginLeft: -5 }}>
+                   
+                    <TouchableOpacity
+                      onPress={() => {
+                        setGroupToDelete(item.id);
+                        setShowDeleteConfirm(true);
+                      }}
+                      style={{ padding: 6, backgroundColor: '#d6d0d0', borderRadius: 50, marginLeft: -15 }}
+                    >
+                      <MaterialIcons name="delete-outline" size={24} color="red" />
+                    </TouchableOpacity>
+
+                  </View>
+                  <Image source={randemImage()} style={{ width: 40, height: 40, borderRadius: 10, marginLeft: -30 }} />
+                  <View>
+                    <Text style={{ fontWeight: '800', marginLeft: 10, width: 90 }}>{item.title}</Text>
+                    <Text style={{ fontWeight: '600', color: 'green', fontSize: 12, marginLeft: 10 }}>Group Spend</Text>
+                    <Text style={{ fontWeight: '600', color: "#db4649", marginLeft: 10 }}>₹ {tripTotals[item.id]?.toFixed(2) || 0}</Text>
+                  </View>
+                </View>
+
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 8 }}>
+                
+
+                  <View style={{ marginLeft: 5 }}>
+
+                    <TouchableOpacity
+                      onPress={() => {
+                        setSelectedGroupId(item.id);
+                        setIsAddMemberModalVisible(true);
+                      }}
+                      style={{ padding: 6, backgroundColor: 'gray', borderRadius: 50, flexDirection: 'row' }}
+                    >
+                      <View style={styles.container}>
+                        <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEvkMZtGOAhpFvkJeuC-pRRrFFaQ9nL0NRTqoBAhLgzGxBwM-29_a4s5R0WwfDIg-1BOk&usqp=CAU' }} style={[styles.circle, { backgroundColor: '#00FFFF', left: -40 }]} />
+                        <Image source={{ uri: 'https://static.vecteezy.com/system/resources/thumbnails/002/002/257/small_2x/beautiful-woman-avatar-character-icon-free-vector.jpg' }} style={[styles.circle, { backgroundColor: '#0000FF', left: -20 }]} />
+                        <Image source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6W8j59cb5rvLX_rYPVcqZ67MVfShKc87w1IafvcFi0_7ytM4mGshNvIZjJFC5RMiEfqw&usqp=CAU' }} style={[styles.circle, { backgroundColor: '#800080', left: 0 }]} />
+                      </View>
+                      <View style={{ backgroundColor: 'gray', borderRadius: 50, padding: 4, marginLeft: 10 }}>
+                        <Feather name="plus-circle" size={20} color='#f0e8e8ff' />
+                      </View>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={() => {
+                        setSelectedGroupId(item.id);
+                        setIsAddMemberModalVisible(true);
+                      }}
+                    >
+                      <Text style={{ fontSize: 12, marginLeft: 8, marginTop: 3 }}>Add Member</Text>
+                    </TouchableOpacity>
+
+                  </View>
+
+                  <View style={{ marginLeft: 15, marginRight: -20 }}>
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('GroupExpanseScreen', { ...item })}
+                      style={{ backgroundColor: '#c4c0c0', padding: 7, borderRadius: 10, paddingLeft: 10, paddingRight: 10, margin: 5 }}
+                    >
+                      <Text style={{ fontSize: 12 }}>Add Expences +</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={async () => {
+                        setSelectedGroupId(item.id);
+                        await fetchMembers(item.id);
+                        setShowMemberPopup(true);
+                      }}
+                      style={{ backgroundColor: '#c4c0c0', padding: 7, borderRadius: 10, paddingLeft: 10, paddingRight: 10, margin: 5 }}
+
+                    >
+                      <Text style={{ fontSize: 12 }}>{memberCounts[item.id] || 0} Member Details </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </TouchableOpacity>
+          )}
+        />
+      )}
 
     </SafeAreaView>
   );
