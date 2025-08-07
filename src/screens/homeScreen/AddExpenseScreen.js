@@ -1,4 +1,4 @@
-import { Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Alert, Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { useNavigation } from '@react-navigation/native'
@@ -8,8 +8,13 @@ import { addDoc } from 'firebase/firestore'
 import { expensesRef } from '../../config/firebse'
 import Loading from '../../components/Loading'
 import BannerAds from '../adManager/BannerAds'
+
+const { height, width } = Dimensions.get('window');
+const iconSize = width > 600 ? 22 : width > 400 ? 26 : 19;
+
+
 const AddExpenseScreen = (propes) => {
-    const {id} = propes.route.params;
+    const { id } = propes.route.params;
     const navigation = useNavigation()
     // console.log("id exp ", id)
 
@@ -40,8 +45,8 @@ const AddExpenseScreen = (propes) => {
         }
     }
     return (
-        <SafeAreaView style={{marginTop:20}} >
-            <ScrollView>
+        <SafeAreaView style={{ marginTop: 20 }} >
+            <ScrollView >
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10 }}>
                     <TouchableOpacity onPress={() => navigation.goBack()}>
                         <Ionicons name='arrow-back-outline' size={25} color='black' />
@@ -51,12 +56,27 @@ const AddExpenseScreen = (propes) => {
                 <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                     <Image source={require('../../assets/sliderImage/expenseBanner.png')} style={{ width: 250, height: 220, borderRadius: 10 }} />
                 </View>
-                <BannerAds/>
+                <BannerAds />
                 <View style={{ marginHorizontal: 20 }}>
                     <Text style={{ padding: 5, fontSize: 16, marginTop: 20 }}>For What ?</Text>
-                    <TextInput placeholderTextColor='gray'  value={title} onChangeText={value => setTitle(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Enter here ...' />
+                    <TextInput placeholderTextColor='gray' value={title} onChangeText={value => setTitle(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Enter here ...' />
                     <Text style={{ padding: 5, fontSize: 16, marginTop: 20 }} >How Much ?</Text>
-                    <TextInput  value={amount} placeholderTextColor='gray'  onChangeText={value => setAmount(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Enter here ...' />
+                    {/* <TextInput  value={amount} placeholderTextColor='gray'  onChangeText={value => setAmount(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Enter here ...' /> */}
+                    <TextInput
+                        value={amount}
+                        onChangeText={value => setAmount(value)}
+                        placeholder="Enter here ..."
+                        placeholderTextColor="gray"
+                        keyboardType="numeric"   // 👈 opens numeric keyboard
+                        style={{
+                            padding: 10,
+                            borderRadius: 30,
+                            backgroundColor: '#f2f3f5',
+                            borderColor: 'gray',
+                            borderWidth: 2
+                        }}
+                    />
+
                 </View>
                 <View style={{ marginHorizontal: 20 }}>
                     <Text style={{ padding: 5, fontSize: 16, marginTop: 20 }} >Category</Text>
@@ -78,11 +98,11 @@ const AddExpenseScreen = (propes) => {
                     loading ? (
                         <Loading />
                     ) :
-                    (
-                        <TouchableOpacity onPress={handleAddExpance} style={{ backgroundColor: '#e0ca4a', marginTop: 10, padding: 10, borderRadius: 20, marginHorizontal: 20, marginTop: 30 }}>
-                            <Text style={{ alignSelf: 'center' }}>Add Expance</Text>
-                        </TouchableOpacity>
-                    )
+                        (
+                            <TouchableOpacity onPress={handleAddExpance} style={{ backgroundColor: '#e0ca4a', marginTop: 10, padding: 10, borderRadius: 20, marginHorizontal: 20, marginTop: 30, marginBottom: 60 }}>
+                                <Text style={{ alignSelf: 'center' }}>Add Expance</Text>
+                            </TouchableOpacity>
+                        )
                 }
 
             </ScrollView>

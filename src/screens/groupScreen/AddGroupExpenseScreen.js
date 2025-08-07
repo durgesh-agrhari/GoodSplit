@@ -9,7 +9,7 @@ import { addGroupExpenseRef, expensesRef, GroupExpenseRef } from '../../config/f
 import Loading from '../../components/Loading'
 import BannerAds from '../adManager/BannerAds'
 const AddGroupExpenseScreen = (propes) => {
-    const {id} = propes.route.params;
+    const { id } = propes.route.params;
     const navigation = useNavigation()
     // console.log("id exp ", id)
 
@@ -40,7 +40,7 @@ const AddGroupExpenseScreen = (propes) => {
         }
     }
     return (
-        <SafeAreaView style={{marginTop:20}} >
+        <SafeAreaView style={{ marginTop: 20 }} >
             <ScrollView>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 10 }}>
                     <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -51,12 +51,27 @@ const AddGroupExpenseScreen = (propes) => {
                 <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                     <Image source={require('../../assets/sliderImage/expenseBanner.png')} style={{ width: 250, height: 220, borderRadius: 10 }} />
                 </View>
-                <BannerAds/>
+                <BannerAds />
                 <View style={{ marginHorizontal: 20 }}>
                     <Text style={{ padding: 5, fontSize: 16, marginTop: 20 }}>For What ?</Text>
                     <TextInput value={title} placeholderTextColor='gray' onChangeText={value => setTitle(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Enter here ...' />
                     <Text style={{ padding: 5, fontSize: 16, marginTop: 20 }} >How Much ?</Text>
-                    <TextInput value={amount} placeholderTextColor='gray' onChangeText={value => setAmount(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Enter here ...' />
+                    {/* <TextInput value={amount} placeholderTextColor='gray' onChangeText={value => setAmount(value)} style={{ padding: 10, borderRadius: 30, backgroundColor: '#f2f3f5', borderColor: 'gray', borderWidth: 2 }} placeholder='Enter here ...' /> */}
+                    <TextInput
+                        value={amount}
+                        placeholderTextColor='gray'
+                        onChangeText={value => setAmount(value)}
+                        keyboardType="numeric"  // 👈 opens number keyboard
+                        style={{
+                            padding: 10,
+                            borderRadius: 30,
+                            backgroundColor: '#f2f3f5',
+                            borderColor: 'gray',
+                            borderWidth: 2
+                        }}
+                        placeholder='Enter here ...'
+                    />
+
                 </View>
                 <View style={{ marginHorizontal: 20 }}>
                     <Text style={{ padding: 5, fontSize: 16, marginTop: 20 }} >Category</Text>
@@ -78,11 +93,11 @@ const AddGroupExpenseScreen = (propes) => {
                     loading ? (
                         <Loading />
                     ) :
-                    (
-                        <TouchableOpacity onPress={handleAddExpance} style={{ backgroundColor: '#e0ca4a', marginTop: 10, padding: 10, borderRadius: 20, marginHorizontal: 20, marginTop: 30 }}>
-                            <Text style={{ alignSelf: 'center' }}>Add Expance</Text>
-                        </TouchableOpacity>
-                    )
+                        (
+                            <TouchableOpacity onPress={handleAddExpance} style={{ backgroundColor: '#e0ca4a', marginTop: 10, padding: 10, borderRadius: 20, marginHorizontal: 20, marginTop: 30 , marginBottom: 60}}>
+                                <Text style={{ alignSelf: 'center' }}>Add Expance</Text>
+                            </TouchableOpacity>
+                        )
                 }
 
             </ScrollView>
